@@ -1,29 +1,39 @@
-import express from "express"
-import urlRoute from "./Routes/url.js"
-import dotenv from "dotenv"
+import express from "express";
+import urlRoute from "./Routes/url.js";
+import dotenv from "dotenv";
 import ConnectDb from "./utills/connect.js";
-
+import cors from "cors";
 
 dotenv.config({
-    path : "./.env"
-})
+    path: "./.env"
+});
 
 const app = express();
 const port = 4000;
 
-ConnectDb()
-.then(()=>{
-    app.listen(port , ()=>{
-        console.log(`Server Is Running At Port : ${port}`);
-    })
-    app.use(express.json())
-    app.use("/" , urlRoute)
+const allowedOrigins = ['http://localhost:5173']; // Add your frontend domain(s) here
 
-})
-.catch(
-    (err)=>{
-        console.log("moogoDb connenation failed !! ::" , err )
-})
+// Enable CORS middleware with specific origins
+app.use(cors({
+  origin: allowedOrigins
+}));
+
+
+app.use(express.json());
+
+ConnectDb()
+    .then(() => {
+        // Start server
+        app.listen(port, () => {
+            console.log(`Server Is Running At Port : ${port}`);
+        });
+
+        // Define routes
+        app.use("/", urlRoute);
+    })
+    .catch(err => {
+        console.log("MongoDB connection failed!!", err);
+    });
 
 /*
 
