@@ -30,6 +30,10 @@ body{
     border: 2px solid var(--main-color);
     box-shadow: 4px 4px var(--main-color);
   }
+  .tablebox{
+    color: black;
+    border: 1px solid black;
+  }
   
   .title {
     color: var(--font-color);
@@ -56,7 +60,7 @@ body{
     color: var(--font-color);
     padding: 5px 10px;
     outline: none;
-    margin-bottom: 50px;
+    margin-bottom: 20px;
   }
   
   .input::placeholder {
@@ -100,7 +104,7 @@ body{
   }
   
   .button-confirm {
-    margin-top: 30px;
+    margin-top: 10px;
     width: 280px;
     height: 40px;
     border-radius: 5px;
@@ -158,3 +162,57 @@ body{
     }
   }
   
+  /*Neo Brutalism pricing card*/
+.card {
+  width: 190px;
+  background: beige;
+  padding: 1rem;
+  margin-top: 10px;
+  margin-bottom: 10px;
+  border-radius: 1rem;
+  border: 0.5vmin solid #05060f;
+  box-shadow: 0.4rem 0.4rem #05060f;
+  overflow: hidden;
+  color: black;
+}
+
+/*Card content*/
+.pricing-block-content {
+  display: flex;
+  height: 100%;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.pricing-plan {
+  color: #05060f;
+  font-size: 1.3rem;
+  line-height: 1.25;
+  font-weight: 700;
+}
+
+.price-value {
+  display: flex;
+  color: #05060f;
+  font-size: 1.8rem;
+  line-height: 1.25;
+  font-weight: 700;
+}
+
+.pricing-note {
+  opacity: 0.8;
+}
+
+/*Checklist*/
+.check-list {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+  margin-top: 0.5rem;
+}
+
+.check-list-item {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+}

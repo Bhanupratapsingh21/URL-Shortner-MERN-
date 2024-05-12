@@ -1,10 +1,12 @@
 import React, { useState } from "react";
 import axios from "axios";
-
+import { useNavigate } from "react-router";
 function Createurl() {
+
     const [loading, setLoading] = useState(false);
     const [url, setUrl] = useState("");
     const [shortUrl, setShortUrl] = useState("");
+    const navigate = useNavigate();
 
     const handleSubmit = async (e) => {
         e.preventDefault();
@@ -30,13 +32,15 @@ function Createurl() {
                 console.log("Short URL copied to clipboard:", shortUrl.shorturl);
             })
             .catch((error) => {
+                alert("SOME THING WANT WRONG TRY AGAIN LETER")
                 console.error("Error copying to clipboard:", error);
             });
     };
 
     return (
         <div className="bodybox">
-            <form className="form" onSubmit={handleSubmit}>
+            <div className="form">
+            <form onSubmit={handleSubmit}>
                 <div className="title">URL Shortener<br /><span>Click To Create Short-URL</span></div>
                 {!loading && (
                     <div>
@@ -55,13 +59,14 @@ function Createurl() {
                         <div className="loading-bar"></div>
                     </div>
                 )}
-                <div>
-                    <button className="button-confirm" type="submit">See Analytics OF URL</button>
-                </div>
-                <div>
-                    <button className="button-confirm" type="submit">Redirect To URL</button>
-                </div>
             </form>
+            <div>
+                    <button className="button-confirm" onClick={()=> navigate("/Analytics") }>See Analytics OF URL</button>
+                </div>
+                <div>
+                    <button className="button-confirm" onClick={()=> navigate("/Redirect") } type="submit">Redirect To URL</button>
+                </div>
+            </div>
         </div>
     );
 }
