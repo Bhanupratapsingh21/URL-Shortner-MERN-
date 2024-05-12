@@ -7,7 +7,7 @@ function App() {
 
   async function EnterURL(){
       try {
-        const result = await fetch(`http://localhost:4000/${input}`)
+        const result = await fetch(`https://url-shortner-hzlh.onrender.com/${input}`)
         window.location =  result.url
       } catch (error) {
         console.log(error)
