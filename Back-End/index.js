@@ -3,6 +3,9 @@ import urlRoute from "./Routes/url.js";
 import dotenv from "dotenv";
 import ConnectDb from "./utills/connect.js";
 import cors from "cors";
+import cookieParser from "cookie-parser";
+import userRoute from "./Routes/User.Routes.js";
+import { handleRedirect } from "./Controllers/url.js"
 
 dotenv.config({
     path: "./.env"
@@ -11,15 +14,16 @@ dotenv.config({
 const app = express();
 const port = 4000;
 
-const allowedOrigins = ['http://localhost:5173']; // Add your frontend domain(s) here
+const corsOptions = {
+    origin: '*'
+};
 
-// Enable CORS middleware with specific origins
-app.use(cors({
-  origin: allowedOrigins
-}));
+// added cors (cros origin resource Shareing )
+app.use(cors(corsOptions));
 
-
+// added Some Middelwares 
 app.use(express.json());
+app.use(cookieParser());
 
 ConnectDb()
     .then(() => {
@@ -27,9 +31,16 @@ ConnectDb()
         app.listen(port, () => {
             console.log(`Server Is Running At Port : ${port}`);
         });
-
+        // allow to capture the ip or trust proxy
+        app.set('trust proxy', true);
         // Define routes
-        app.use("/", urlRoute);
+        app.get("/home", (req, res) => {
+            return res.status(201).json({ "MSG": "HOME" })
+        })
+        app.get("/:shortId", handleRedirect);
+        app.use("/url", urlRoute);
+
+        app.use("/users", userRoute);
     })
     .catch(err => {
         console.log("MongoDB connection failed!!", err);
