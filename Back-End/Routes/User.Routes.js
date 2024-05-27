@@ -11,7 +11,7 @@ import {
 
 const router = express.Router();
 
-router.post("/sign-up", handleUserSignUp);
+router.post("/signup", handleUserSignUp);
 router.post("/login", handleUserLogin);
 router.post("/refreshtoken", refreshAccessToken);
 router.post("/logout",verifyjwt,LogoutUser)

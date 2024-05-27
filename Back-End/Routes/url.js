@@ -5,11 +5,12 @@ import {
     handlegetanalytics
 } from "../Controllers/url.js";
 import {verifyjwt} from "../Middlewares/auth.middleware.js"
+import Validateauth from "../Middlewares/Validate.js";
 
 const router = express.Router();
 
-router.post("/createurl", verifyjwt ,generateNewUrl);
+router.post("/createurl", Validateauth ,generateNewUrl);
 router.get("/:shortId", handleRedirect);
-router.get("/analytics/:shortId", verifyjwt ,handlegetanalytics);
+router.get("/analytics/:shortId", Validateauth ,handlegetanalytics);
 
 export default router

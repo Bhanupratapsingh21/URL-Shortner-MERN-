@@ -90,16 +90,27 @@ async function handleUserSignUp(req, res) {
         });
     
         await user.save();
-    
-        const createdUser = await User.findById(user._id).select("-password -refreshToken");
-    
-        if (!createdUser) {
+
+        const { accessToken, refreshToken } = await genrateAccessTokenandRefreshtokens(user._id);
+
+        const loggedInUser = await User.findById(user._id).select("-password -refreshToken");
+
+        const options = {
+            httpOnly: true,
+            secure: true
+        };
+
+        if (!loggedInUser) {
             return res.status(500).json({ "msg": "Something went wrong while registering user" });
         }
     
-        return res.status(201).json({
+        return res
+        .status(201)
+        .cookie("accessToken", accessToken, options)
+        .cookie("refreshToken", refreshToken, options)
+        .json({
             msg: "User registered successfully",
-            user: createdUser,
+            user: loggedInUser,
         });
     } catch (error) {
         console.error(error);
