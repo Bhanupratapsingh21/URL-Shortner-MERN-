@@ -57,7 +57,7 @@ async function handleUserLogin(req, res) {
             .cookie("refreshToken", refreshToken, options)
             .json({
                 MSG: "User logged in successfully",
-                data: { user: loggedInUser, accessToken, refreshToken }
+                data: {accessToken}
             });
     } catch (error) {
         console.error(error);
