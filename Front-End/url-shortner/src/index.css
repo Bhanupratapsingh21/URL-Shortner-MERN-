@@ -163,8 +163,14 @@ body{
   }
   
   /*Neo Brutalism pricing card*/
+.centerbox{
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+}
 .card {
-  width: 190px;
+  width: 350px;
   background: beige;
   padding: 1rem;
   margin-top: 10px;

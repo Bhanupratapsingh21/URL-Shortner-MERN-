@@ -8,9 +8,9 @@ function Redirect() {
     const [loading, setLoading] = useState(false)
     const navigate = useNavigate();
     function EnterURL() {
-            setLoading(true)
-            window.location.href = `https://url-shortner-hzlh.onrender.com/${input}`
-            setLoading(false)
+        setLoading(true)
+        window.location.href = `https://url-shortner-hzlh.onrender.com/${input}`
+        setLoading(false)
     }
 
 
@@ -29,9 +29,9 @@ function Redirect() {
                         <label>Enter Magic URL To Redirect</label>
                     </div>
                     <center>
-                        <button onClick={EnterURL} id="button" class="full-rounded">
-                            <span>Hover me</span>
-                            <div class="border full-rounded"></div>
+                        <button type="submit" id="button" className="full-rounded">
+                            <span>Let's GO</span>
+                            <div className="border full-rounded"></div>
                         </button>
                     </center>
                 </form>

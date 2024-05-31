@@ -2,7 +2,7 @@ import { useState, useContext } from "react";
 import axios from "axios";
 import { AuthContext } from "../../Contaxt/AuthContextprovider"; 
 import { Link } from "react-router-dom";
-
+import { useNavigate } from "react-router-dom";
 function Login() {
     const [loading, setLoading] = useState(false);
     const [username, setUsername] = useState("");
@@ -10,7 +10,7 @@ function Login() {
     const [password, setPassword] = useState("");
     const { setLogin } = useContext(AuthContext);
     const [error, setError] = useState(null);
-
+    const navigate = useNavigate();
     const handleSubmit = async (e) => {
         e.preventDefault();
         setLoading(true);
@@ -26,7 +26,8 @@ function Login() {
 
             const token = response.data.data.accessToken;
             setLogin(token);
-            console.log(response.data);
+            // console.log(response.data);
+            navigate("/createurl")
         } catch (error) {
             console.error("Login failed:", error);
             setError("Login failed. Please check your credentials and try again.");

@@ -5,14 +5,17 @@ import { useState } from "react";
 function Analytics() {
     const [input, setInput] = useState("");
     const [loading, setLoading] = useState(false);
-    const [data, setData] = useState([]);
+    const [data, setData] = useState(
+    );
     const navigate = useNavigate();
 
-    async function EnterURL() {
+    async function EnterURL(e) {
+        e.preventDefault();
         try {
             setLoading(true);
-            const response = await axios.get(`https://url-shortner-hzlh.onrender.com/analytics/${input}`);
-            setData(response.data); // Update data state with fetched analytics data
+            const response = await axios.get(`http://localhost:4000/url/analytics/${input}`, { withCredentials: true });
+            console.log(response.data)
+            setData(response.data.result);
             setLoading(false);
         } catch (error) {
             alert("Something went wrong");
@@ -23,25 +26,73 @@ function Analytics() {
 
     return (
         <>
-            <div className="bodybox">
-                <div className="form">
-                    <div>
-                        <button className="button-confirm" onClick={() => navigate("/")}>HOME</button>
+            {!data && (
+                <div className="login-box">
+                    <form onSubmit={EnterURL}>
+                        <div className="user-box">
+                            <input onChange={(e) => setInput(e.target.value)} type="text" value={input} name="" required="" />
+                            <label>Your Magic URL</label>
+                        </div>
+                        <center>
+                            <button type="submit" id="button" className="full-rounded">
+                                <span>Get Analytics</span>
+                                <div className="border full-rounded"></div>
+                            </button>
+                        </center>
+                    </form>
+                </div>
+            )}
+            <div className="loaderbox">
+                {data && (
+                    <div class="code-editor">
+                        <div class="header">
+                            <span class="title">Your Data</span>
+                        </div>
+                        <div class="editor-content">
+                            <code class="code">
+                                <p><span class="color-0">.url-analytics </span> <span></span></p>
+
+                                <p class="property">
+                                    <span class="color-2">Total Views</span><span>:</span>
+                                    <span class="color-1"> {data.visitHistory.length} </span>;
+                                </p>
+                                <p class="property">
+                                    <span class="color-2">RedirectURL</span><span>:</span>
+                                    <span class=""> {data.redirectURL} </span>;
+                                </p>
+                                <p class="property">
+                                    <span class="color-2"> Created On</span><span>:</span>
+                                    <span class="color-1"> {data.createdAt} <span class="color-3"></span></span>;
+                                </p>
+                                <p class="property">
+                                    <span class="color-2">CreatedBy</span><span>:</span>
+                                    <span class="color-1"> You That Why You Are Able To See Analytics</span> ;
+                                </p>
+                                <div className="centerbox">
+                                    {data.visitHistory.map((value, index) => (
+                                        <div key={index} className="card" >
+                                            <h3>Req By (Device) : {value["Device-Info"]} </h3>
+                                            <h3>IP :{value["ip-addreas"]}</h3>
+                                            <h3>At {value.timestamp} </h3>
+                                            <h3>Time :{value["Time-IND"]}`</h3>
+                                        </div>
+                                    ))}
+                                </div>
+                                <span></span>
+                            </code>
+                        </div>
                     </div>
-                    {!loading && (
-                        <>
-                            <div className="title">URL Analytics<br /><span>Enter the URL To Get Analytics</span></div>
-                            <input onChange={(e) => setInput(e.target.value)} value={input} className="input" name="url" placeholder="URL" type="text" />
-                            <div className="login-with" />
-                            <div>
-                                <button className="button-confirm" onClick={EnterURL}>GO</button>
-                            </div>
-                        </>
-                    )}
-                    {data.visitHistory && (
-                        <div>
-                            <h1 style={{ "color" : "black"}}>Total Views : {data.visitHistory.length + 1}</h1>
-                            {data.visitHistory.map((value, index) => (
+                )}
+            </div>
+        </>
+    );
+}
+
+export default Analytics;
+
+/*{data.visitHistory.length + 1}
+
+{data.visitHistory.map((value, index) => (
                                 <div key={index} className="card" >
                                     <h3>Req By = Device : {value["Device-Info"]} </h3>
                                     <h3>IP :{value["ip-addreas"]}</h3>
@@ -49,20 +100,5 @@ function Analytics() {
                                     <h3>Time :{value["Time-IND"]}`</h3>
                                 </div>
                             ))}
-                        </div>
-                    )}
-                    {loading && (
-                        <div className="loading-wave">
-                            <div className="loading-bar"></div>
-                            <div className="loading-bar"></div>
-                            <div className="loading-bar"></div>
-                            <div className="loading-bar"></div>
-                        </div>
-                    )}
-                </div>
-            </div>
-        </>
-    );
-}
 
-export default Analytics;
+*/

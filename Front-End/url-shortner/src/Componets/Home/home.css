@@ -211,7 +211,8 @@
     font-size: 16px;
     position: relative;
     margin: auto;
-    padding: 1em 2.5em 1em 2.5em;
+    width: 9em;
+    padding: 1em 1em 1em 1em;
     border: none;
     background: #fff;
     transition: all 0.1s linear;
@@ -232,17 +233,101 @@
     transition: all 0.3s 0.08s linear;
     top: 50%;
     left: 50%;
-    width: 9em;
+    width: 7em;
     height: 3em;
     transform: translate(-50%, -50%);
    }
    
    #button:hover .border {
     display: block;
-    width: 9.9em;
-    height: 3.7em;
+    width: 9.3em;
+    height: 3.5em;
    }
    
    .full-rounded {
     border-radius: 2em;
    }
+
+
+   /**/
+
+   .code-editor {
+    max-width: max-content;
+    height: max-content;
+    background-color: #1d1e22;
+    box-shadow: 0px 4px 30px rgba(0, 0, 0, 0.5);
+    border-radius: 8px;
+    padding: 2px;
+  }
+  
+  .header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin: 10px;
+  }
+  
+  .title {
+    font-family: Lato, sans-serif;
+    font-weight: 900;
+    font-size: 14px;
+    letter-spacing: 1.57px;
+    color: rgb(212 212 212);
+  }
+  
+  .icon {
+    width: 20px;
+    transition: .2s ease;
+  }
+  
+  .icon:hover {
+    cursor: pointer;
+    border-radius: 50px;
+    background-color: #6e7281;
+  }
+  
+  .editor-content {
+    margin: 0 10px 10px;
+    color: white;
+    margin-top: -50px;
+  }
+  
+  .property {
+    margin-left: 30px;
+  }
+  
+  .property:hover {
+    cursor: text;
+  }
+  
+  .editor-content .color-0 {
+    color: rgb(86 156 214);
+  }
+  
+  .editor-content .color-1 {
+    color: rgb(182 206 168);
+  }
+  
+  .editor-content .color-2 {
+    color: rgb(156 220 254);
+  }
+  
+  .editor-content .color-3 {
+    color: rgb(207 146 120);
+  }
+  
+  .color-preview-1,.color-preview-2 {
+    height: 8px;
+    width: 8px;
+    border: 1px solid #fff;
+    display: inline-block;
+    margin-right: 3px;
+  }
+  
+  .color-preview-1 {
+    background-color: #1d1e22;
+  }
+  
+  .color-preview-1 {
+    background-color: rgba(0, 0, 0, 0.5);
+  }

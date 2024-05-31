@@ -7,22 +7,27 @@ function AuthContextProvider({ children }) {
 
     const [isAuth, setIsAuth] = useState(false);
     useEffect(() => {
-        getAuthStatus();
+       getAuthStatus();
     }, []);
 
     const getAuthStatus = async () => {
+        console.log("NEW SESSION GENRATED");
         const token = localStorage.getItem("accesstoken");
         if (token) {
             try {
                 const res = await axios.get("http://localhost:4000/users/refreshtoken", { withCredentials: true });
-                // console.log(res);
-                setIsAuth(true);
+                console.log(res);
+                if(res){
+                    setLogin(res.data.data.accessToken)
+                    console.log(res)
+                }
             } catch (error) {
-                // console.log(error);
-                setIsAuth(false);
+                console.log("error in makeing req")
+                setLogout();
             }
         } else {
-            setIsAuth(false);
+            setLogout();
+            console.log("logouted")
         }
     };
 
@@ -35,12 +40,16 @@ function AuthContextProvider({ children }) {
         localStorage.setItem("accesstoken", token);
         setIsAuth(true);
     };
+    const createnewsession= ()=>{
+        getAuthStatus();
+    };
 
     const value = {
         isAuth,
         setIsAuth,
         setLogin,
         setLogout,
+        createnewsession,
     };
 
     return (
