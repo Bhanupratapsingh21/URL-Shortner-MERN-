@@ -48,7 +48,8 @@ async function handleUserLogin(req, res) {
 
         const options = {
             httpOnly: true,
-            secure: true
+            secure: false, // Secure in production, false in development
+            sameSite: 'None' 
         };
 
         return res
@@ -110,8 +111,8 @@ async function handleUserSignUp(req, res) {
             .cookie("accessToken", accessToken, options)
             .cookie("refreshToken", refreshToken, options)
             .json({
-                msg: "User registered successfully",
-                user: loggedInUser,
+                MSG: "User registered successfully",
+                data: { accessToken }
             });
     } catch (error) {
         console.error(error);
