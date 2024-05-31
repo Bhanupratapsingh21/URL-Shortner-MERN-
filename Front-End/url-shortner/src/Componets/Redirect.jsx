@@ -16,35 +16,25 @@ function Redirect() {
 
     return (
         <>
-            <div className="bodybox">
-                <div className="form">
-                    {
-                        !loading && (
-                            <>
-                                <div className="title">URL Redirect<br /><span>Click On To Redirect</span></div>
-                                <input onChange={(e) => setinput(e.target.value)} value={input} className="input" name="url" placeholder="URL" type="text" />
-                                <div className="login-with" />
-                                <div>
-                                    <button className="button-confirm" onClick={EnterURL}>GO</button>
-                                </div>
-                            </>
-                        )
-                    }
-                    {loading && (
-                        <div className="loading-wave">
-                            <div className="loading-bar"></div>
-                            <div className="loading-bar"></div>
-                            <div className="loading-bar"></div>
-                            <div className="loading-bar"></div>
-                        </div>
-                    )}
-                    <div>
-                        <button className="button-confirm" onClick={() => navigate("/Analytics")}>See Analytics OF URL</button>
+            <div className="login-box">
+                <form >
+                    <div className="user-box">
+                        <input
+                            type="text"
+                            name="username"
+                            value={input}
+                            onChange={(e) => setinput(e.target.value)}
+                            required
+                        />
+                        <label>Enter Magic URL To Redirect</label>
                     </div>
-                    <div>
-                        <button className="button-confirm" onClick={() => navigate("/")}>Create URL'S</button>
-                    </div>
-                </div>
+                    <center>
+                        <button onClick={EnterURL} id="button" class="full-rounded">
+                            <span>Hover me</span>
+                            <div class="border full-rounded"></div>
+                        </button>
+                    </center>
+                </form>
             </div>
         </>
     )

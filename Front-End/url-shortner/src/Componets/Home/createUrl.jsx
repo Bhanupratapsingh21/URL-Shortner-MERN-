@@ -62,8 +62,8 @@ function Createurl() {
                             <label>Create MAGIC-URL</label>
                         </div>
                         <center>
-                            <button class="full-rounded">
-                                <span>Login</span>
+                            <button id="button" class="full-rounded">
+                                <span>Hover me</span>
                                 <div class="border full-rounded"></div>
                             </button>
                         </center>

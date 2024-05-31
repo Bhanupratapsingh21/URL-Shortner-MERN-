@@ -5,16 +5,26 @@ import Redirect from "../Componets/Redirect.jsx";
 import Analytics from "../Componets/Analytics.jsx";
 import Login from "../Componets/Login/Login.jsx";
 import Signin from "../Componets/Sign-up/Signup.jsx";
-function AllRoutes (){
+import PrivateRoute from "./PrivateRoute.jsx";
+import Home from "../Componets/Home/Home.jsx";
+function AllRoutes() {
 
-    return(
+    return (
         <Routes>
-            <Route path="/" element={<Createurl/>} />
-            <Route path="/Redirect" element={<Redirect/>} />
-            <Route path="/Analytics" element={<Analytics/>} />
+            <Route path="/" element={<Home/>} />
+            <Route path="/createurl" element={
+                <PrivateRoute>
+                    <Createurl />
+                </PrivateRoute>
+            } />
+            <Route path="/Redirect" element={<Redirect />} />
+            <Route path="/Analytics" element={
+            <PrivateRoute>
+                <Analytics />
+            </PrivateRoute>} />
             <Route path="/user">
-                    <Route path="/user/login" element={<Login/>} />
-                    <Route path="/user/signin" element={<Signin/>} />                   
+                <Route path="/user/login" element={<Login />} />
+                <Route path="/user/signin" element={<Signin />} />
             </Route>
         </Routes>
     )

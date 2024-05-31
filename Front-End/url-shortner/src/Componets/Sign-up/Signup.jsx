@@ -1,3 +1,9 @@
+import React , {useState} from "react";
+import axios from "axios";
+import { useContext } from "react";
+import { AuthContext } from "../../Contaxt/AuthContextprovider";
+import { Link } from "react-router-dom";
+
 function Signin() {
     const [loading, setLoading] = useState(false);
     const [username, setUsername] = useState("");
@@ -11,7 +17,7 @@ function Signin() {
 
         try {
             const response = await axios.post("http://localhost:4000/users/login", {
-                name : username,
+                name: username,
                 email,
                 password
             });
@@ -61,12 +67,13 @@ function Signin() {
                         <label>Password</label>
                     </div>
                     <center>
-                        <button class="full-rounded">
-                            <span>Login</span>
+                        <button id="button" type="submit" class="full-rounded">
+                            <span>Hover me</span>
                             <div class="border full-rounded"></div>
                         </button>
                     </center>
                 </form>
+                <center><h5>Already Have A Account<Link to="/user/login">Login</Link></h5></center>
             </div>
             <div className="loaderbox">
                 {loading && (

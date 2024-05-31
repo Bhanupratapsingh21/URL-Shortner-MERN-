@@ -4,8 +4,8 @@ import React, { createContext, useEffect, useState } from "react";
 export const AuthContext = createContext();
 
 function AuthContextProvider({ children }) {
+
     const [isAuth, setIsAuth] = useState(false);
-    console.log("hello");
     useEffect(() => {
         getAuthStatus();
     }, []);
@@ -14,15 +14,11 @@ function AuthContextProvider({ children }) {
         const token = localStorage.getItem("accesstoken");
         if (token) {
             try {
-                const res = await axios.post("http://localhost:4000/users/refreshtoken", {}, {
-                    headers: {
-                        Authorization: `Bearer ${token}`
-                    }
-                });
-                console.log(res);
+                const res = await axios.get("http://localhost:4000/users/refreshtoken", { withCredentials: true });
+                // console.log(res);
                 setIsAuth(true);
             } catch (error) {
-                console.error(error);
+                // console.log(error);
                 setIsAuth(false);
             }
         } else {
