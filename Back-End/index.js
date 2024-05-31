@@ -15,9 +15,9 @@ const app = express();
 const port = 4000;
 
 const corsOptions = {
-    origin: '*'
+    origin: 'http://localhost:5173', // Change to your front-end URL
+    credentials: true
 };
-
 // added cors (cros origin resource Shareing )
 app.use(cors(corsOptions));
 
