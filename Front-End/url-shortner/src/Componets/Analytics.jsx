@@ -4,6 +4,7 @@ import { useState } from "react";
 
 function Analytics() {
     const [input, setInput] = useState("");
+    const [error, setError] = useState(null);
     const [loading, setLoading] = useState(false);
     const [data, setData] = useState(
     );
@@ -13,12 +14,14 @@ function Analytics() {
         e.preventDefault();
         try {
             setLoading(true);
-            const response = await axios.get(`http://localhost:4000/url/analytics/${input}`, { withCredentials: true });
+            const lastPart = input.split('/').pop(); // Extract the last part of the URL
+            const response = await axios.get(`http://localhost:4000/url/analytics/${lastPart}`, { withCredentials: true });
             console.log(response.data)
             setData(response.data.result);
             setLoading(false);
         } catch (error) {
-            alert("Something went wrong");
+            alert("This URL Is Not OWN BY You Or Not Found");
+            setError("This URL Is Not OWN BY You Or Not Found");
             console.log(error);
             setLoading(false);
         }
@@ -33,6 +36,8 @@ function Analytics() {
                             <input onChange={(e) => setInput(e.target.value)} type="text" value={input} name="" required="" />
                             <label>Your Magic URL</label>
                         </div>
+                        {error && <div className="error-message">{error}</div>}
+                        <br />
                         <center>
                             <button type="submit" id="button" className="full-rounded">
                                 <span>Get Analytics</span>

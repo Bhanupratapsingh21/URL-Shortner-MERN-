@@ -7,17 +7,19 @@ function AuthContextProvider({ children }) {
 
     const [isAuth, setIsAuth] = useState(false);
     useEffect(() => {
-       getAuthStatus();
+        getAuthStatus();
     }, []);
 
     const getAuthStatus = async () => {
         console.log("NEW SESSION GENRATED");
-        const token = localStorage.getItem("accesstoken");
+        const token = localStorage.getItem("refreshToken");
         if (token) {
             try {
-                const res = await axios.get("http://localhost:4000/users/refreshtoken", { withCredentials: true });
-                console.log(res);
-                if(res){
+                const res = await axios.post("http://localhost:4000/users/refreshtoken", {
+                    refreshToken: token
+                }, { withCredentials: true });
+                // console.log(res);
+                if (res) {
                     setLogin(res.data.data.accessToken)
                     console.log(res)
                 }
@@ -32,15 +34,27 @@ function AuthContextProvider({ children }) {
     };
 
     const setLogout = () => {
-        localStorage.removeItem("accesstoken");
+        localStorage.removeItem("refreshToken");
         setIsAuth(false);
+        // Make a request to logout the user
+        axios.get("http://localhost:4000/users/logout", { withCredentials: true })
+            .then(response => {
+                console.log("User logged out successfully");
+                // Redirect to login page
+
+            })
+            .catch(error => {
+                console.error("Error logging out user:", error);
+                // Redirect to login page
+
+            });
     };
 
     const setLogin = (token) => {
-        localStorage.setItem("accesstoken", token);
+        localStorage.setItem("refreshToken", token);
         setIsAuth(true);
     };
-    const createnewsession= ()=>{
+    const createnewsession = () => {
         getAuthStatus();
     };
 
@@ -59,4 +73,4 @@ function AuthContextProvider({ children }) {
     );
 }
 
-export default AuthContextProvider;
+export { AuthContextProvider };
