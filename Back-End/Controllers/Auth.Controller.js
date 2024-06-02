@@ -49,7 +49,8 @@ async function handleUserLogin(req, res) {
         const options = {
             httpOnly: true,
             secure: false, // Secure in production, false in development
-            sameSite: 'None' 
+            sameSite: 'None' ,
+            maxAge: 2 * 24 * 60 * 60 * 1000,
         };
 
         return res
@@ -99,7 +100,8 @@ async function handleUserSignUp(req, res) {
         const options = {
             httpOnly: true,
             secure: false, // Secure in production, false in development
-            sameSite: 'None' // Ensure cross-origin cookies work
+            sameSite: 'None' ,// Ensure cross-origin cookies work
+            maxAge: 2 * 24 * 60 * 60 * 1000,
         };
 
         if (!loggedInUser) {
@@ -145,7 +147,8 @@ async function refreshAccessToken(req, res) {
         const options = {
             httpOnly: true,
             secure: false, // Secure in production, false in development
-            sameSite: 'None' // Ensure cross-origin cookies work
+            sameSite: 'None', // Ensure cross-origin cookies work
+            maxAge: 2 * 24 * 60 * 60 * 1000,
         };
 
         const { accessToken, refreshToken } = await genrateAccessTokenandRefreshtokens(user._id);
