@@ -14,7 +14,7 @@ function Createurl() {
         setLoading(true);
 
         try {
-            const response = await axios.post("http://localhost:4000/url/createurl", {
+            const response = await axios.post("https://url-shortner-mern-uetd.onrender.com/url/createurl", {
                 url: url
             },{ withCredentials: true });
             setShortUrl(response.data.shorturl);
@@ -27,7 +27,7 @@ function Createurl() {
     };
 
     const handleCopy = () => {
-        navigator.clipboard.writeText(`http://localhost:4000/${shortUrl}`)
+        navigator.clipboard.writeText(`https://url-shortner-mern-uetd.onrender.com/${shortUrl}`)
             .then(() => {
                 alert("Short URL copied to clipboard");
                 console.log("Short URL copied to clipboard:", shortUrl);
@@ -45,7 +45,7 @@ function Createurl() {
                     <div className="cardres">
                         <div className="card-details">
                             <h2>Magic-Link</h2>
-                            <p className="text-body">http://localhost:5173/{shortUrl}</p>
+                            <p className="text-body">https://url-shortner-mern-uetd.onrender.com/{shortUrl}</p>
                         </div>
                         <button className="card-button" onClick={handleCopy}>
                             COPY MAGIC-LINK

@@ -15,7 +15,7 @@ function Analytics() {
         try {
             setLoading(true);
             const lastPart = input.split('/').pop(); // Extract the last part of the URL
-            const response = await axios.get(`http://localhost:4000/url/analytics/${lastPart}`, { withCredentials: true });
+            const response = await axios.get(`https://url-shortner-mern-uetd.onrender.com/url/analytics/${lastPart}`, { withCredentials: true });
             console.log(response.data)
             setData(response.data.result);
             setLoading(false);

@@ -17,7 +17,7 @@ function Login() {
         setError(null); // Reset error state
 
         try {
-            const response = await axios.post("http://localhost:4000/users/login", {
+            const response = await axios.post("https://url-shortner-mern-uetd.onrender.com/users/login", {
                 name: username,
                 email,
                 password
