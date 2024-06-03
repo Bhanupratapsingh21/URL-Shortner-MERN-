@@ -15,7 +15,7 @@ function AuthContextProvider({ children }) {
         const token = localStorage.getItem("refreshToken");
         if (token) {
             try {
-                const res = await axios.post("http://localhost:4000/users/refreshtoken", {
+                const res = await axios.post("https://url-shortner-mern-uetd.onrender.com/users/refreshtoken", {
                     refreshToken: token
                 }, { withCredentials: true });
                 // console.log(res);
@@ -37,7 +37,7 @@ function AuthContextProvider({ children }) {
         localStorage.removeItem("refreshToken");
         setIsAuth(false);
         // Make a request to logout the user
-        axios.get("http://localhost:4000/users/logout", { withCredentials: true })
+        axios.get("https://url-shortner-mern-uetd.onrender.com/users/logout", { withCredentials: true })
             .then(response => {
                 console.log("User logged out successfully");
                 // Redirect to login page
