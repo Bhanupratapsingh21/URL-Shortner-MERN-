@@ -15,7 +15,7 @@ const app = express();
 const port = 4000;
 
 const corsOptions = {
-    origin: ['http://localhost:5173', 'https://url-shortner-mern-uetd.onrender.com'], // Add other allowed origins as needed
+    origin: ['http://localhost:5173', 'https://url-shortner-mern.vercel.app'], // Add other allowed origins as needed
     methods: ['GET', 'POST', 'PUT', 'DELETE', 'PATCH', 'OPTIONS'],
     allowedHeaders: ['Content-Type', 'Authorization', 'X-Requested-With', 'Accept', 'Origin'],
     exposedHeaders: ['Content-Type', 'Authorization', 'X-Requested-With', 'Accept'],
