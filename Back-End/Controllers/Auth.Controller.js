@@ -48,9 +48,9 @@ async function handleUserLogin(req, res) {
 
         const options = {
             httpOnly: true,
-            secure: false, // Secure in production, false in development
-            sameSite: 'None' ,
-            maxAge: 2 * 24 * 60 * 60 * 1000,
+            secure: true, // Ensure secure is true for SameSite=None cookies
+            sameSite: 'None', // Ensure cross-origin cookies work
+            maxAge: 2 * 24 * 60 * 60 * 1000, // 2 days
         };
 
         return res
@@ -99,10 +99,11 @@ async function handleUserSignUp(req, res) {
 
         const options = {
             httpOnly: true,
-            secure: false, // Secure in production, false in development
-            sameSite: 'None' ,// Ensure cross-origin cookies work
-            maxAge: 2 * 24 * 60 * 60 * 1000,
+            secure: true, // Ensure secure is true for SameSite=None cookies
+            sameSite: 'None', // Ensure cross-origin cookies work
+            maxAge: 2 * 24 * 60 * 60 * 1000, // 2 days
         };
+        
 
         if (!loggedInUser) {
             return res.status(500).json({ "msg": "Something went wrong while registering user" });
@@ -146,9 +147,9 @@ async function refreshAccessToken(req, res) {
 
         const options = {
             httpOnly: true,
-            secure: false, // Secure in production, false in development
+            secure: true, // Ensure secure is true for SameSite=None cookies
             sameSite: 'None', // Ensure cross-origin cookies work
-            maxAge: 2 * 24 * 60 * 60 * 1000,
+            maxAge: 2 * 24 * 60 * 60 * 1000, // 2 days
         };
 
         const { accessToken, refreshToken } = await genrateAccessTokenandRefreshtokens(user._id);
@@ -187,7 +188,9 @@ async function LogoutUser(req, res) {
         })
     const options = {
         httpOnly: true,
-        secure: true
+        secure: true, // Ensure secure is true for SameSite=None cookies
+        sameSite: 'None', // Ensure cross-origin cookies work
+        maxAge: 2 * 24 * 60 * 60 * 1000, // 2 days
     }
 
     return res.status(200)
