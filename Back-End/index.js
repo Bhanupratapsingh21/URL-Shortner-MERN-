@@ -15,10 +15,10 @@ const app = express();
 const port = 4000;
 
 const corsOptions = {
-    origin: 'http://localhost:5173', // Change to your front-end URL
+    origin: ['http://localhost:5173', 'https://url-shortner-mern.vercel.app/'], // Replace with your actual Vercel URL
     credentials: true
 };
-// added cors (cros origin resource Shareing )
+
 app.use(cors(corsOptions));
 
 // added Some Middelwares 
