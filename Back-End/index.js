@@ -5,7 +5,7 @@ import ConnectDb from "./utills/connect.js";
 import cors from "cors";
 import cookieParser from "cookie-parser";
 import userRoute from "./Routes/User.Routes.js";
-import { handleRedirect } from "./Controllers/url.js"
+import { handleRedirect } from "./Controllers/url.js";
 
 dotenv.config({
     path: "./.env"
@@ -15,13 +15,21 @@ const app = express();
 const port = 4000;
 
 const corsOptions = {
-    origin: ['http://localhost:5173', 'https://url-shortner-mern.vercel.app/'], // Replace with your actual Vercel URL
-    credentials: true
+    origin: ['http://localhost:5173', 'https://url-shortner-mern-uetd.onrender.com'], // Add other allowed origins as needed
+    methods: ['GET', 'POST', 'PUT', 'DELETE', 'PATCH', 'OPTIONS'],
+    allowedHeaders: ['Content-Type', 'Authorization', 'X-Requested-With', 'Accept', 'Origin'],
+    exposedHeaders: ['Content-Type', 'Authorization', 'X-Requested-With', 'Accept'],
+    credentials: true,
+    preflightContinue: false,
+    optionsSuccessStatus: 204
 };
 
 app.use(cors(corsOptions));
 
-// added Some Middelwares 
+// Enable pre-flight across-the-board
+app.options('*', cors(corsOptions));
+
+// Middleware
 app.use(express.json());
 app.use(cookieParser());
 
@@ -31,15 +39,17 @@ ConnectDb()
         app.listen(port, () => {
             console.log(`Server Is Running At Port : ${port}`);
         });
-        // allow to capture the ip or trust proxy
+
+        // Allow to capture the IP or trust proxy
         app.set('trust proxy', true);
+
         // Define routes
         app.get("/home", (req, res) => {
-            return res.status(201).json({ "MSG": "HOME" })
-        })
+            return res.status(201).json({ "MSG": "HOME" });
+        });
+
         app.get("/:shortId", handleRedirect);
         app.use("/url", urlRoute);
-
         app.use("/users", userRoute);
     })
     .catch(err => {
