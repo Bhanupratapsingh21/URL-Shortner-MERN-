@@ -1,6 +1,6 @@
 import bcrypt from 'bcrypt';
 
-const saltRounds = 21;
+const saltRounds = 10;
 
 // Hash the password
 async function hashPassword(password: string): Promise<string> {

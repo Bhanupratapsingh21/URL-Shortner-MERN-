@@ -14,36 +14,35 @@ datasource db {
 }
 
 model User {
-  id            Int      @id @default(autoincrement())
-  username      String   @unique
-  email         String   @unique
-  password      String
-  refreshToken  String
+  id           String @id @default(dbgenerated("substring(md5(random()::text), 1, 6)"))
+  username     String @unique
+  email        String @unique
+  password     String
+  refreshToken String
 }
 
 model Link {
-  id            Int      @id @default(autoincrement())
-  shortId       String   @unique
-  createdAt     DateTime @default(now())
-  redirects     Redirect[]
-  visitHistory  VisitHistory[]
+  id           Int            @id @default(autoincrement())
+  shortId      String         @unique
+  createdAt    DateTime       @default(now())
+  redirects    Redirect[]
+  visitHistory VisitHistory[]
 }
 
 model Redirect {
-  id            Int      @id @default(autoincrement())
-  url           String
-  startTime     DateTime
-  endTime       DateTime
-  linkId        Int
-  link          Link     @relation(fields: [linkId], references: [id])
+  id        Int      @id @default(autoincrement())
+  url       String
+  startTime DateTime
+  endTime   DateTime
+  linkId    Int
+  link      Link     @relation(fields: [linkId], references: [id])
 }
 
 model VisitHistory {
-  id            Int      @id @default(autoincrement())
-  timestamp     DateTime @default(now())
-  ipAddress     String
-  deviceInfo    String
-  linkId        Int
-  link          Link     @relation(fields: [linkId], references: [id])
+  id         Int      @id @default(autoincrement())
+  timestamp  DateTime @default(now())
+  ipAddress  String
+  deviceInfo String
+  linkId     Int
+  link       Link     @relation(fields: [linkId], references: [id])
 }
-

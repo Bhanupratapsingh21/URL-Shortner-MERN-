@@ -1,13 +1,92 @@
-import { Router, Request, Response, NextFunction } from 'express'; // Import NextFunction
-import { signup } from '../Controller/Auth';
+import { Router } from 'express';
+import {
+  signup,
+  welcome,
+  login,
+  logout,
+  refreshAccessToken,
+  changeuserCurrentPassword,
+  changeusername,
+  getuser,
+} from '../Controller/Auth';
+import prisma from '../utils/prishmaconnection';
+import { authMiddleware } from '../Middleware/auth.Middleware';
 
+// Create a new router instance
 const router = Router();
 
-router.route("/signup").post(async (req: Request, res: Response, next: NextFunction) => { // Add type for next
+// Define routes using Router methods
+router.post("/signup", async (req, res, next) => {
   try {
-    await signup(req, res); // Call the signup controller function
+    await signup(req, res, next);
   } catch (error) {
-    next(error); // Pass the error to the next middleware for error handling
+    next(error);
+  }
+});
+
+router.post("/login", async (req, res, next) => {
+  try {
+    await login(req, res);
+  } catch (error) {
+    next(error);
+  }
+});
+
+router.post("/logout", authMiddleware,async (req, res, next) => {
+  try {
+    await logout(req, res);
+  } catch (error) {
+    next(error);
+  }
+});
+
+router.post("/changeuserCurrentPassword", authMiddleware, async (req, res, next) => {
+  try {
+    await changeuserCurrentPassword(req, res);
+  } catch (error) {
+    next(error);
+  }
+});
+
+router.post("/changeusername", authMiddleware, async (req, res, next) => {
+  try {
+    await changeusername(req, res);
+  } catch (error) {
+    next(error);
+  }
+});
+
+router.get("/refreshAccessToken", authMiddleware , async (req, res, next) => {
+  try {
+    await refreshAccessToken(req, res);
+  } catch (error) {
+    next(error);
+  }
+});
+
+router.get("/getuser", authMiddleware, async (req, res, next) => {
+  try {
+    await getuser(req, res);
+  } catch (error) {
+    next(error);
+  }
+});
+
+router.get("/welcome", async (req, res, next) => {
+  try {
+    await welcome(req, res);
+  } catch (error) {
+    next(error);
+  }
+});
+
+router.get('/users', async (_req, res) => {
+  try {
+    const users = await prisma.user.findMany();
+    res.json(users); // Return the list of users as a JSON response
+  } catch (error) {
+    console.error('Error fetching users:', error);
+    res.status(500).json({ error: 'Failed to fetch users' });
   }
 });
 
