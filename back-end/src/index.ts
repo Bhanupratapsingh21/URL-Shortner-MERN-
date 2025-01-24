@@ -8,7 +8,7 @@ import cookieParser from 'cookie-parser';
 import prisma from './utils/prishmaconnection';
 import router from './Routes/auth';
 import { errorHandler } from './Middleware/errorhandlers';
-
+import urlrouter from "./Routes/url"
 dotenv.config();
 
 const app = express();
@@ -36,6 +36,7 @@ app.use(helmet());
 app.use(morgan('combined'));
 
 app.use("/user", router);
+app.use("/url", urlrouter);
 
 // Error handling middleware should be last
 app.use(errorHandler);

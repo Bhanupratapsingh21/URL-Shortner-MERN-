@@ -15,7 +15,7 @@ export const authMiddleware = async (req: Request, res: Response, next: NextFunc
         const decodedToken = await verifyTokenAccesstoken(accessToken) as User;
 
         const user = await prisma.user.findFirst({
-            where: { username: decodedToken.username as string }
+            where: { id: decodedToken.id as string }
         });
 
         if (user) {

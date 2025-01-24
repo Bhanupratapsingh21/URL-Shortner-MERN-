@@ -1,8 +1,8 @@
 interface user {
-    id: number
-    username: String
-    email: String
-    password: String
-    refreshToken: String
+    id: string
+    username: string
+    email: string
+    password: string
+    refreshToken: string
 }
 export default user;

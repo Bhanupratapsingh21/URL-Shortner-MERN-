@@ -1,62 +1,50 @@
-/*
 import { Router } from 'express';
-import { PrismaClient } from '@prisma/client';
-import { nanoid } from 'nanoid';
+import {
+    createLink,
+    createRedirect,
+    redirectOptimized,
+    getLinkStats
+} from "../Controller/Url.controllers";
 
 const router = Router();
-const prisma = new PrismaClient();
 
-router.post('/shorten', async (req, res) => {
-    const { originalUrl, userId } = req.body;
-
+router.get("/redirect/:shortId", async (req, res, next) => {
     try {
-        const shortUrl = nanoid(8);
-        const url = await prisma.url.create({
-            data: { originalUrl, shortUrl, userId },
-        });
-
-        res.status(201).json({ success: true, url });
+        await redirectOptimized(req, res, next);
     } catch (error) {
-        res.status(500).json({ success: false, error: error.message });
+        next(error);
     }
 });
 
-router.get('/:shortUrl', async (req, res) => {
-    const { shortUrl } = req.params;
 
+import { authMiddleware } from '../Middleware/auth.Middleware';
+
+router.use(authMiddleware);
+
+router.post("/createUrl", async (req, res, next) => {
     try {
-        const url = await prisma.url.findUnique({ where: { shortUrl } });
-        if (!url) return res.status(404).json({ success: false, message: 'URL not found' });
-
-        await prisma.url.update({
-            where: { id: url.id },
-            data: { clicks: { increment: 1 } },
-        });
-
-        res.redirect(url.originalUrl);
+        await createLink(req, res,next);
     } catch (error) {
-        res.status(500).json({ success: false, error: error.message });
+        next(error);
     }
 });
 
-router.get('/analytics/:userId', async (req, res) => {
-    const { userId } = req.params;
-
+router.post("/createRedirect", async (req, res, next) => {
     try {
-        const urls = await prisma.url.findMany({ where: { userId: parseInt(userId) } });
-        const analytics = urls.map((url) => ({
-            originalUrl: url.originalUrl,
-            shortUrl: url.shortUrl,
-            clicks: url.clicks,
-        }));
-
-        res.status(200).json({ success: true, analytics });
+        await createRedirect(req, res, next);
     } catch (error) {
-        res.status(500).json({ success: false, error: error.message });
+        next(error);
     }
 });
+
+
+router.get("/getLinkStats/:shortId", async (req, res, next) => {
+    try {
+        await getLinkStats(req, res, next);
+    } catch (error) {
+        next(error);
+    }
+});
+
 
 export default router;
-
-
-*/
