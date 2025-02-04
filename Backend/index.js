@@ -1,11 +1,11 @@
 import express from "express";
-import urlRoute from "./Routes/url.js";
+//import urlRoute from "./Routes/url.js";
 import dotenv from "dotenv";
 import cors from "cors";
 import cookieParser from "cookie-parser";
 import userRoute from "./Routes/User.Routes.js";
-import { handleRedirect } from "./Controllers/url.js";
-import prisma from './utils/prisma.js'; // Ensure the path is correct
+// import { handleRedirect } from "./Controllers/url.js";
+import prisma from './utills/prisma.js'; // Ensure the path is correct
 import helmet from "helmet";
 import morgan from "morgan";
 
@@ -60,8 +60,8 @@ app.get("/home", (req, res) => {
     return res.status(200).json({ message: "HOME" });
 });
 
-app.get("/:shortId", handleRedirect);
-app.use("/url", urlRoute);
+//app.get("/:shortId", handleRedirect);
+//app.use("/url", urlRoute);
 app.use("/users", userRoute);
 
 // Error handling middleware

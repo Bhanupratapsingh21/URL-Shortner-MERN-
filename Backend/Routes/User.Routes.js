@@ -1,6 +1,6 @@
 import express from "express"
-import { verifyjwt } from "../Middlewares/auth.middleware.js";
-import { 
+import { verifyJwt } from "../Middlewares/auth.middleware.js";
+import {
     handleUserLogin,
     handleUserSignUp,
     refreshAccessToken,
@@ -14,6 +14,6 @@ const router = express.Router();
 router.post("/signup", handleUserSignUp);
 router.post("/login", handleUserLogin);
 router.post("/refreshtoken", refreshAccessToken);
-router.get("/logout",verifyjwt,LogoutUser)
+router.get("/logout", verifyJwt, LogoutUser)
 
 export default router

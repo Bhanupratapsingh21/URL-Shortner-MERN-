@@ -1,25 +1,43 @@
-import { User } from "../Models/User.models.js"
-import jwt from "jsonwebtoken"
+import jwt from 'jsonwebtoken';
+import prisma from '../utills/prisma.js';
+import {
+    generateRefreshToken,
+    generateAccessToken
+} from '../utills/jwt.js';
+import { hashPassword } from '../utills/bcryptworker.js';
+import {
+    alreadyExists,
+    dataValiationFailed,
+    tokensGenerationError,
+    userCreationSuccess,
+    internalServerError,
+    userCreationFailure
+} from '../Constants/en/responses.js';
+import { ResponseStatusCode as statusCodes } from '../Constants/StatusCodes.js';
+import { ApiResponse } from '../utills/apiResponse.js';
+import { ApiError } from '../utills/apiError.js';
+import isValidEmail from '../utills/VaildEmail.js';
+import isValidPassword from '../utills/Vaildpassword.js';
 
-// for genrate Access to token and refresh tokens
-const genrateAccessTokenandRefreshtokens = async (userid) => {
+const generateAccessTokenAndRefreshTokens = async (userId) => {
     try {
-        const user = await User.findById(userid)
-        const accessToken = user.genrateAccessToken()
-        const refreshToken = user.genrateRefreshToken()
+        const user = await prisma.user.findUnique({ where: { id: userId } });
+        const accessToken = generateAccessToken(user);
+        const refreshToken = generateRefreshToken(user);
 
-        user.refreshToken = refreshToken
-        await user.save({ validateBeforeSave: false })
+        await prisma.user.update({
+            where: { id: userId },
+            data: { refreshToken },
+        });
 
-        return {
-            accessToken,
-            refreshToken,
-        }
+        return { accessToken, refreshToken };
     } catch (error) {
-        throw new console.error("500 Something want wrong in genrate tokens", error)
+        console.error(tokensGenerationError, error);
+        throw new Error(tokensGenerationError);
     }
-}
+};
 
+// Handle User Login
 async function handleUserLogin(req, res) {
     const { email, name, password } = req.body;
 
@@ -28,29 +46,29 @@ async function handleUserLogin(req, res) {
     }
 
     try {
-        const user = await User.findOne({
-            $or: [{ name }, { email }]
+        const user = await prisma.user.findFirst({
+            where: {
+                OR: [{ name }, { email }],
+            },
         });
 
         if (!user) {
             return res.status(404).json({ "MSG": "User not found" });
         }
 
-        const isPasswordValid = await user.isPasswordCorrect(password);
+        const isPasswordValid = await validatePassword(password, user.password);
 
         if (!isPasswordValid) {
             return res.status(401).json({ "MSG": "Invalid user credentials" });
         }
 
-        const { accessToken, refreshToken } = await genrateAccessTokenandRefreshtokens(user._id);
-
-        const loggedInUser = await User.findById(user._id).select("-password -refreshToken");
+        const { accessToken, refreshToken } = await generateAccessTokenAndRefreshTokens(user.id);
 
         const options = {
             httpOnly: true,
-            secure: true, // Ensure secure is true for SameSite=None cookies
-            sameSite: 'None', // Ensure cross-origin cookies work
-            maxAge: 2 * 24 * 60 * 60 * 1000, // 2 days
+            secure: true,
+            sameSite: 'None',
+            maxAge: 2 * 24 * 60 * 60 * 1000,
         };
 
         return res
@@ -59,100 +77,149 @@ async function handleUserLogin(req, res) {
             .cookie("refreshToken", refreshToken, options)
             .json({
                 MSG: "User logged in successfully",
-                data: { accessToken }
+                data: { accessToken },
             });
     } catch (error) {
         console.error(error);
         return res.status(500).json({ "MSG": "Server error" });
     }
-
 }
-
-// added a save method in models so when i save password it got incrypts
-
 async function handleUserSignUp(req, res) {
-    const { name, email, password } = req.body;
+    const { username, email, password } = req.body;
+
     try {
-        if (!name?.trim() || !email?.trim() || !password?.trim()) {
-            return res.status(400).json({ "msg": "All fields are required" });
+        // Validate input
+        if (!username?.trim() || !email?.trim() || !password?.trim()) {
+            return res
+                .status(statusCodes.BAD_REQUEST)
+                .json(new ApiError(statusCodes.BAD_REQUEST, "Invalid input: All fields are required.").toJson());
         }
 
-        const existingUser = await User.findOne({
-            $or: [{ name }, { email }]
+        // Additional validation (e.g., email format, password strength)
+        if (!isValidEmail(email)) {
+            return res
+                .status(statusCodes.BAD_REQUEST)
+                .json(new ApiError(statusCodes.BAD_REQUEST, "Invalid email format.").toJson());
+        }
+
+        if (!isValidPassword(password)) {
+            return res
+                .status(statusCodes.BAD_REQUEST)
+                .json(new ApiError(statusCodes.BAD_REQUEST, "Password does not meet complexity requirements.").toJson());
+        }
+
+        // Check if user exists
+        const existingUser = await prisma.user.findFirst({
+            where: {
+                OR: [{ username }, { email }],
+            },
         });
 
         if (existingUser) {
-            return res.status(409).json({ "msg": "Name or Email already exists" });
+            return res
+                .status(statusCodes.CONFLICT)
+                .json(
+                    new ApiError(
+                        statusCodes.CONFLICT,
+                        existingUser.username === username
+                            ? "Username already exists."
+                            : "Email already exists."
+                    ).toJson()
+                );
         }
 
-        const user = new User({
-            name,
-            email,
-            password,
+        // Hash the password
+        const hashedPassword = await hashPassword(password);
+
+        // Create the user
+        const user = await prisma.user.create({
+            data: { username, email, password: hashedPassword },
         });
 
-        await user.save();
+        // Exclude sensitive fields
+        const { password: _, ...safeUser } = user;
 
-        const { accessToken, refreshToken } = await genrateAccessTokenandRefreshtokens(user._id);
+        // Generate tokens
+        const { accessToken, refreshToken } = await generateAccessTokenAndRefreshTokens(user);
 
-        const loggedInUser = await User.findById(user._id).select("-password -refreshToken");
-
-        const options = {
+        const cookieOptions = {
             httpOnly: true,
-            secure: true, // Ensure secure is true for SameSite=None cookies
-            sameSite: 'None', // Ensure cross-origin cookies work
+            secure: true,
+            sameSite: 'None',
             maxAge: 2 * 24 * 60 * 60 * 1000, // 2 days
         };
-        
 
-        if (!loggedInUser) {
-            return res.status(500).json({ "msg": "Something went wrong while registering user" });
-        }
-
+        // Respond with success
         return res
-            .status(201)
-            .cookie("accessToken", accessToken, options)
-            .cookie("refreshToken", refreshToken, options)
+            .status(statusCodes.CREATED)
+            .cookie("accessToken", accessToken, cookieOptions)
+            .cookie("refreshToken", refreshToken, cookieOptions)
             .json({
-                MSG: "User registered successfully",
-                data: { accessToken }
+                success: true,
+                statusCode: statusCodes.CREATED,
+                message: "User created successfully.",
+                data: { user: safeUser, accessToken, refreshToken },
             });
     } catch (error) {
-        console.error(error);
-        return res.status(500).json({ "msg": "Server error" });
+        // Handle known Prisma errors
+        if (error instanceof Prisma.PrismaClientKnownRequestError) {
+            if (error.code === 'P2002') {
+                // Unique constraint violation
+                return res
+                    .status(statusCodes.CONFLICT)
+                    .json(
+                        new ApiError(
+                            statusCodes.CONFLICT,
+                            "A user with the provided email or username already exists."
+                        ).toJson()
+                    );
+            }
+        }
+
+        // Log the error with context
+        console.error("Error during user signup:", {
+            error: error.message,
+            stack: error.stack,
+            input: { username, email }, // Avoid logging sensitive fields like password
+        });
+
+        // Return generic API error
+        return res
+            .status(statusCodes.INTERNAL_SERVER_ERROR)
+            .json(
+                new ApiError(
+                    statusCodes.INTERNAL_SERVER_ERROR,
+                    "Internal Server Error. Please try again later.",
+                    [error.message]
+                ).toJson()
+            );
     }
 }
 
+// Refresh Access Token
 async function refreshAccessToken(req, res) {
     const incomingRefreshToken = req.cookies.refreshToken || req.body.refreshToken;
 
-    // Check if token is present
     if (!incomingRefreshToken) {
         return res.status(401).json({ msg: "Unauthorized request" });
     }
 
     try {
         const decodedToken = jwt.verify(incomingRefreshToken, process.env.REFRESH_TOKEN_SECRET);
+        const user = await prisma.user.findUnique({ where: { id: decodedToken.userId } });
 
-        const user = await User.findById(decodedToken?._id);
+        if (!user || incomingRefreshToken !== user.refreshToken) {
+            return res.status(401).json({ msg: "Invalid or expired refresh token" });
+        }
 
-        if (!user) {
-            return res.status(401).json({ msg: "Invalid refresh token" });
-        }
-        // for some checking perposes console.log(user.refreshToken)
-        // Check if the user's refresh token matches the received token
-        if (incomingRefreshToken !== user.refreshToken) {
-            return res.status(401).json({ msg: "Refresh token is expired or used" });
-        }
+        const { accessToken, refreshToken } = await generateAccessTokenAndRefreshTokens(user.id);
 
         const options = {
             httpOnly: true,
-            secure: true, // Ensure secure is true for SameSite=None cookies
-            sameSite: 'None', // Ensure cross-origin cookies work
-            maxAge: 2 * 24 * 60 * 60 * 1000, // 2 days
+            secure: true,
+            sameSite: 'None',
+            maxAge: 2 * 24 * 60 * 60 * 1000,
         };
-
-        const { accessToken, refreshToken } = await genrateAccessTokenandRefreshtokens(user._id);
 
         return res
             .status(200)
@@ -160,47 +227,39 @@ async function refreshAccessToken(req, res) {
             .cookie("refreshToken", refreshToken, options)
             .json({
                 msg: "Access and refresh token issued successfully",
-                data: {
-                    accessToken,
-                    refreshToken,
-                },
+                data: { accessToken, refreshToken },
             });
-
     } catch (error) {
         console.error('Error refreshing token:', error);
         return res.status(500).json({ msg: "Server error" });
     }
-
 }
 
-// always wrap in try catch
+// Handle User Logout
 async function LogoutUser(req, res) {
-    // so in req we dont have auccces to user but we dont have id etc so let create a middleware 
-    // for it 
-    await User.findByIdAndUpdate(req.user._id,
-        {
-            $set: {
-                refreshToken: undefined
-            }
-        },
-        {
-            new: true
-        })
+    const userId = req.user.id;
+
+    await prisma.user.update({
+        where: { id: userId },
+        data: { refreshToken: null },
+    });
+
     const options = {
         httpOnly: true,
-        secure: true, // Ensure secure is true for SameSite=None cookies
-        sameSite: 'None', // Ensure cross-origin cookies work
-        maxAge: 2 * 24 * 60 * 60 * 1000, // 2 days
-    }
+        secure: true,
+        sameSite: 'None',
+        maxAge: 2 * 24 * 60 * 60 * 1000,
+    };
 
     return res.status(200)
         .clearCookie("refreshToken", options)
         .clearCookie("accessToken", options)
-        .json({ MSG: "User Logged Out" })
+        .json({ MSG: "User Logged Out" });
 }
 
+// Get Current User
 async function getCurrentUser(req, res) {
-    return res.status(200).json({ "MSG": "Current User Fatched Successfully", "Data": req.user })
+    return res.status(200).json({ "MSG": "Current User Fetched Successfully", "Data": req.user });
 }
 
 export {
@@ -209,4 +268,4 @@ export {
     getCurrentUser,
     refreshAccessToken,
     LogoutUser,
-}
+};

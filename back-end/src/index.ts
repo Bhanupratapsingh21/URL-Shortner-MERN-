@@ -15,7 +15,7 @@ const app = express();
 
 // CORS configuration
 const corsOptions: CorsOptions = {
-    origin: ['http://localhost:5173', 'https://url-shortner-mern.vercel.app'],
+    origin: ['http://localhost:3000', 'https://url-shortner-mern.vercel.app'],
     methods: ['GET', 'POST', 'PUT', 'DELETE', 'PATCH', 'OPTIONS'],
     allowedHeaders: ['Content-Type', 'Authorization', 'X-Requested-With', 'Accept', 'Origin'],
     exposedHeaders: ['Content-Type', 'Authorization', 'X-Requested-With', 'Accept'],
