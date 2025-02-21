@@ -1,4 +1,5 @@
 interface user {
+    status: boolean
     id: string
     username: string
     email: string

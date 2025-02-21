@@ -209,7 +209,7 @@ const refreshAccessToken = async (req: Request, res: Response) => {
         }
 
         const { accessToken, refreshToken } = await generateTokens(user);
-
+        const { password: _, refreshToken: __, ...safeUser } = user;
         return res
             .status(200)
             .cookie("accessToken", accessToken, { httpOnly: true, secure: true })
@@ -218,6 +218,7 @@ const refreshAccessToken = async (req: Request, res: Response) => {
                 new ApiResponse(
                     200,
                     {
+                        ...safeUser,
                         accessToken,
                         refreshToken
                     },

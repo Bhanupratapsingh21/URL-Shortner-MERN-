@@ -6,12 +6,10 @@ import ColourfulText from "@/components/ui/colourful-text";
 import axiosInstance from "@/lib/axiosInstance";
 import { useRouter } from "next/navigation";
 import { setUser } from "@/store/authSlice";
-import user from "@/types/user.type";
 import { useToast } from "@/hooks/use-toast";
-import axios from "axios";
 import { isAxiosError } from "axios";
 import { useDispatch } from "react-redux";
-import { MultiStepLoader as Loader } from "@/components/ui/multi-step-loader";
+
 interface userrequest {
   id: string
   username: string
@@ -19,9 +17,8 @@ interface userrequest {
   accessToken: string
   refreshToken: string
 }
+
 import { Loader2 } from "lucide-react";
-
-
 export default function Page() {
   const dispatch = useDispatch();
   const router = useRouter();
@@ -40,7 +37,7 @@ export default function Page() {
       if (response.status === 200) {
         const userData = response.data as { data: userrequest };
         const user = userData.data as userrequest;
-        dispatch(setUser(userData.data));
+        dispatch(setUser({ ...user, status: true }));
         // saveing refreshtoken in the localstorage
         localStorage.setItem("refreshToken", user.refreshToken);
         console.log(userData.data);

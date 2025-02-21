@@ -32,7 +32,7 @@ router.post("/login", async (req, res, next) => {
   }
 });
 
-router.post("/logout", authMiddleware,async (req, res, next) => {
+router.post("/logout", authMiddleware, async (req, res, next) => {
   try {
     await logout(req, res);
   } catch (error) {
@@ -56,7 +56,7 @@ router.post("/changeusername", authMiddleware, async (req, res, next) => {
   }
 });
 
-router.get("/refreshAccessToken", authMiddleware , async (req, res, next) => {
+router.post("/refreshAccessToken", authMiddleware, async (req, res, next) => {
   try {
     await refreshAccessToken(req, res);
   } catch (error) {

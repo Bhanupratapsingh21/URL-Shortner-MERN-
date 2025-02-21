@@ -1,8 +1,10 @@
 "use client";
 import { createSlice, PayloadAction } from "@reduxjs/toolkit";
-import Usertype  from "@/types/user.type";
+import Usertype from "@/types/user.type";
+
 
 const initialState: Usertype = {
+    status: false,
     id: "",
     username: "",
     email: "",

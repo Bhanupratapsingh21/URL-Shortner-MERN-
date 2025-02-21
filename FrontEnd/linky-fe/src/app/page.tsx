@@ -1,5 +1,4 @@
 "use client";
-import Image from "next/image";
 import React from "react";
 import ColourfulText from "@/components/ui/colourful-text";
 import { CardBody, CardContainer, CardItem } from "@/components/ui/3d-card";
@@ -9,7 +8,7 @@ import MainNavbar from "@/components/Mainpagenavbar";
 export default function Home() {
   return (
     <>
-    <MainNavbar />
+      <MainNavbar />
       <div className="">
         <section id="hero" className="min-h-[70vh] bg-black  pt-20">
           <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 flex flex-col lg:flex-row items-center justify-between py-12">
@@ -31,7 +30,7 @@ export default function Home() {
                 </a>
               </div>
               <div className="mt-8 text-neutral-400 text-sm animate__animated animate__fadeInUp animate__delay-3s">
-                <p>Trusted by Me any My Dog</p>
+                <p>Trusted By Me And My 10/10 buddie And My Dog</p>
                 <div className="flex items-center justify-center lg:justify-start mt-4 space-x-4">
                   <div className="flex items-center">
                     <span className="text-yellow-400">★★★★★</span>
@@ -185,7 +184,7 @@ export default function Home() {
                     </div>
                   </CardItem>
                   <CardItem
-                    as="p"
+                    as="div"
                     translateZ="60"
                     className="text-neutral-500 text-sm max-w-sm mt-2 dark:text-neutral-300"
                   >
@@ -315,7 +314,7 @@ export default function Home() {
               <CardContainer className="inter-var">
                 <CardBody className="bg-neutral-900 h-full p-6 rounded-xl border border-neutral-700 shadow-2xl animate__animated animate__fadeInLeft ">
                   <CardItem
-                    as="p"
+                    as="div"
                     translateZ="60"
                     className="text-neutral-500 text-sm w-full mt-2 dark:text-neutral-300"
                   >
@@ -364,8 +363,6 @@ export default function Home() {
                       Create Time-Based Link
                     </button>
                   </CardItem>
-
-
                 </CardBody>
               </CardContainer>
 

@@ -3,6 +3,7 @@ import "./globals.css";
 import ReduxProvider from "@/store/Provider";
 import { Toaster } from "@/components/ui/toaster";
 import type { Metadata } from "next";
+import AppWrapper from "@/utils/SessionWrapper"; // Import the wrapper
 
 export const metadata: Metadata = {
   title: "Create Next App",
@@ -26,14 +27,17 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="en">
+    <html className="dark" lang="en">
       <body
         className={`${geistSans.variable} ${geistMono.variable} antialiased`}
       >
         <ReduxProvider>
-          {children}
-          <Toaster />
+          <AppWrapper>
+            {children}
+            <Toaster />
+          </AppWrapper>
         </ReduxProvider>
+
       </body>
     </html>
   );
