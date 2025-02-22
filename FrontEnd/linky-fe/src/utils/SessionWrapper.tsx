@@ -47,7 +47,7 @@ export default function AppWrapper({ children }: { children: React.ReactNode }) 
                     dispatch(setUser({ ...data.data, status: true }));
                     localStorage.setItem("refreshToken", data.data.refreshToken);
                     toast({ title: "Welcome Back!", description: "Redirecting to dashboard" });
-                    router.push("/dashboard");
+                    //router.push("/dashboard");
                 }
             } catch (error) {
                 toast({ title: "Session Expired", description: "Please login again", variant: "destructive" });
