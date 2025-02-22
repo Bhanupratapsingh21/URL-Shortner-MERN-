@@ -1,0 +1,15 @@
+version: '3.8'
+services:
+  postgres:
+    image: postgres:latest 
+    container_name: my-postgres-container
+    environment:
+      POSTGRES_USER: pgadminurlify
+      POSTGRES_PASSWORD: pgadmin@123urlify
+      POSTGRES_DB: linkyfy
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+volumes:
+  postgres_data:
