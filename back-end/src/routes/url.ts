@@ -4,7 +4,7 @@ import {
     createRedirect,
     redirectOptimized,
     getLinkStats
-} from "../Controller/Url.controllers";
+} from "../controller/Url.controllers";
 
 const router = Router();
 
@@ -17,7 +17,7 @@ router.get("/redirect/:shortId", async (req, res, next) => {
 });
 
 
-import { authMiddleware } from '../Middleware/auth.Middleware';
+import { authMiddleware } from '../middleware/auth.Middleware';
 
 router.use(authMiddleware);
 

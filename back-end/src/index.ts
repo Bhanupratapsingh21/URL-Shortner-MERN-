@@ -6,9 +6,10 @@ import morgan from 'morgan';
 import { CorsOptions } from 'cors';
 import cookieParser from 'cookie-parser';
 import prisma from './utils/prishmaconnection';
-import router from './Routes/auth';
-import { errorHandler } from './Middleware/errorhandlers';
-import urlrouter from "./Routes/url"
+import router from './routes/auth';
+import urlrouter from "./routes/url";
+import { errorHandler } from './middleware/errorhandlers';
+
 dotenv.config();
 
 const app = express();

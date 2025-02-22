@@ -8,9 +8,9 @@ import {
   changeuserCurrentPassword,
   changeusername,
   getuser,
-} from '../Controller/Auth';
+} from '../controller/Auth';
 import prisma from '../utils/prishmaconnection';
-import { authMiddleware } from '../Middleware/auth.Middleware';
+import { authMiddleware } from '../middleware/auth.Middleware';
 
 // Create a new router instance
 const router = Router();
