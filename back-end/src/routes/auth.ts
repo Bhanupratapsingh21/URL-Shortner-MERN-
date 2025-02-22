@@ -9,7 +9,6 @@ import {
   changeusername,
   getuser,
 } from '../controller/Auth';
-import prisma from '../utils/prishmaconnection';
 import { authMiddleware } from '../middleware/auth.Middleware';
 
 // Create a new router instance
@@ -77,16 +76,6 @@ router.get("/welcome", async (req, res, next) => {
     await welcome(req, res);
   } catch (error) {
     next(error);
-  }
-});
-
-router.get('/users', async (_req, res) => {
-  try {
-    const users = await prisma.user.findMany();
-    res.json(users); // Return the list of users as a JSON response
-  } catch (error) {
-    console.error('Error fetching users:', error);
-    res.status(500).json({ error: 'Failed to fetch users' });
   }
 });
 

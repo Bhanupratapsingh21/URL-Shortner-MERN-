@@ -1,6 +1,12 @@
 'use client';
 import * as React from "react"
 import Chart from "@/components/ClickChart";
+import {
+    IconLink,
+    IconDeviceMobile,
+    IconDeviceDesktop,
+    IconDeviceTablet,
+} from "@tabler/icons-react";
 const exampleData = {
     analyticsData: [
         { date: "2024-04-01", desktop: 222, mobile: 150 },
@@ -102,19 +108,19 @@ const exampleData = {
             device: "Mobile",
             percentage: 60,
             count: 3000,
-            icon: "fas fa-mobile-alt"
+            icon: <IconDeviceMobile className="h-6 w-6" />,
         },
         {
             device: "Desktop",
             percentage: 35,
             count: 1700,
-            icon: "fas fa-laptop"
+            icon: <IconDeviceDesktop className="h-6 w-6" />,
         },
         {
             device: "Tablet",
             percentage: 5,
             count: 250,
-            icon: "fas fa-tablet-alt"
+            icon: <IconDeviceTablet className="h-6 w-6" />,
         }
     ],
     title: "Custom Analytics Title", // optional
@@ -126,21 +132,19 @@ export default function Dashboard() {
     return (
         <>
             <div className="bg-[#09090B] h-max w-full text-white">
-                <section className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-4 gap-6 p-6">
+                <section className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-2 gap-6 p-6">
                     <div className="bg-black rounded-xl border border-gray-200 p-6">
                         <div className="flex justify-between items-center">
                             <div>
-                                <p className="text-sm text-gray-600">Total Links</p>
-                                <h3 className="text-2xl font-bold mt-2">156</h3>
+                                <p className="text-sm text-gray-600">Total Live Links</p>
+                                <h3 className="text-2xl font-bold mt-2">15</h3>
                             </div>
-                            <div className="w-12 h-12 bg-accent-100 rounded-full flex items-center justify-center">
-                                <i className="fas fa-link text-accent-600 text-xl"></i>
+                            <div className="w-8 h-8  rounded-full flex items-center justify-center">
+                                <IconLink className="h-full text-green-400 w-full" />
                             </div>
                         </div>
                         <div className="mt-4 flex items-center">
-                            <i className="fas fa-arrow-up text-green-500 text-sm"></i>
-                            <span className="text-sm text-green-500 ml-1">12%</span>
-                            <span className="text-sm text-gray-500 ml-2">vs last month</span>
+                            <span className="text-sm text-gray-500">Total Active Links</span>
                         </div>
                     </div>
 
@@ -148,52 +152,15 @@ export default function Dashboard() {
                     <div className="bg-black rounded-xl border border-gray-200 p-6">
                         <div className="flex justify-between items-center">
                             <div>
-                                <p className="text-sm text-gray-600">Total Clicks</p>
-                                <h3 className="text-2xl font-bold mt-2">24.5K</h3>
+                                <p className="text-sm text-gray-600">Total Link's</p>
+                                <h3 className="text-2xl font-bold mt-2">2</h3>
                             </div>
-                            <div className="w-12 h-12 bg-primary-100 rounded-full flex items-center justify-center">
-                                <i className="fas fa-mouse-pointer text-primary-600 text-xl"></i>
-                            </div>
-                        </div>
-                        <div className="mt-4 flex items-center">
-                            <i className="fas fa-arrow-up text-green-500 text-sm"></i>
-                            <span className="text-sm text-green-500 ml-1">8%</span>
-                            <span className="text-sm text-gray-500 ml-2">vs last month</span>
-                        </div>
-                    </div>
-
-
-                    <div className="bg-black rounded-xl border border-gray-200 p-6">
-                        <div className="flex justify-between items-center">
-                            <div>
-                                <p className="text-sm text-gray-600">Average CTR</p>
-                                <h3 className="text-2xl font-bold mt-2">4.2%</h3>
-                            </div>
-                            <div className="w-12 h-12 bg-secondary-100 rounded-full flex items-center justify-center">
-                                <i className="fas fa-chart-line text-secondary-600 text-xl"></i>
+                            <div className="w-8 h-8  rounded-full flex items-center justify-center">
+                                <IconLink className="h-full text-blue-600 w-full" />
                             </div>
                         </div>
                         <div className="mt-4 flex items-center">
-                            <i className="fas fa-arrow-down text-red-500 text-sm"></i>
-                            <span className="text-sm text-red-500 ml-1">2%</span>
-                            <span className="text-sm text-gray-500 ml-2">vs last month</span>
-                        </div>
-                    </div>
-
-                    <div className="bg-black rounded-xl border border-gray-200 p-6">
-                        <div className="flex justify-between items-center">
-                            <div>
-                                <p className="text-sm text-gray-600">Active Links</p>
-                                <h3 className="text-2xl font-bold mt-2">142</h3>
-                            </div>
-                            <div className="w-12 h-12 bg-accent-100 rounded-full flex items-center justify-center">
-                                <i className="fas fa-check-circle text-accent-600 text-xl"></i>
-                            </div>
-                        </div>
-                        <div className="mt-4 flex items-center">
-                            <i className="fas fa-arrow-up text-green-500 text-sm"></i>
-                            <span className="text-sm text-green-500 ml-1">5%</span>
-                            <span className="text-sm text-gray-500 ml-2">vs last month</span>
+                            <span className="text-sm text-gray-500 ">Total Links (active or not)</span>
                         </div>
                     </div>
                 </section>

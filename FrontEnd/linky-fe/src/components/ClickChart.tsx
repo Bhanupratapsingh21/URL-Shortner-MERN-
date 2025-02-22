@@ -1,7 +1,7 @@
 "use client";
 import React from "react";
 import { Area, AreaChart, CartesianGrid, XAxis } from "recharts";
-
+import { IconHandFinger } from "@tabler/icons-react";
 import {
     Card,
     CardContent,
@@ -35,7 +35,7 @@ interface DeviceStats {
     device: string;
     percentage: number;
     count: number;
-    icon: string;
+    icon: React.ReactNode; // Accepts JSX el
 }
 
 interface DashboardProps {
@@ -94,7 +94,7 @@ export default function Dashboard({
 
     return (
         <div className="h-max w-full text-white">
-            <section id="click_analytics_widget" className="p-6 space-y-6">
+            <section id="" className="p-6 space-y-6">
                 <div className="bg-black rounded-xl border border-gray-200 p-6">
                     <div className="flex justify-between items-center mb-6">
                         <h3 className="text-lg font-semibold">{title}</h3>
@@ -240,23 +240,11 @@ export default function Dashboard({
                                     {formatClickCount(totalClicks)}
                                 </h3>
                             </div>
-                            <div className="w-12 h-12 bg-primary-100 rounded-full flex items-center justify-center">
-                                <i className="fas fa-mouse-pointer text-primary-600 text-xl"></i>
+                            <div className="w-8 h-8  rounded-full flex items-center justify-center">
+                                <IconHandFinger className="h-full text-green-400 w-full" />
                             </div>
                         </div>
-                        <div className="mt-4 flex items-center">
-                            <i
-                                className={`fas fa-arrow-${clicksGrowth >= 0 ? "up" : "down"
-                                    } text-${clicksGrowth >= 0 ? "green" : "red"}-500 text-sm`}
-                            ></i>
-                            <span
-                                className={`text-sm text-${clicksGrowth >= 0 ? "green" : "red"
-                                    }-500 ml-1`}
-                            >
-                                {Math.abs(clicksGrowth)}%
-                            </span>
-                            <span className="text-sm text-gray-500 ml-2">vs last month</span>
-                        </div>
+
                     </div>
 
                     <div className="bg-black rounded-xl border border-gray-200 p-6">
@@ -268,7 +256,7 @@ export default function Dashboard({
                                     className="flex items-center justify-between"
                                 >
                                     <div className="flex items-center">
-                                        <i className={`${stat.icon} w-8 text-primary-500`}></i>
+                                        {stat.icon}
                                         <span className="ml-3">{stat.device}</span>
                                     </div>
                                     <div className="flex items-center">
