@@ -4,7 +4,14 @@ import logo from '../../public/logo.png';
 import Link from 'next/link';
 import { useSelector } from 'react-redux';
 import Usertype from '../types/user.type';
-
+import {
+    IconLayoutDashboard,
+    IconUser,
+    IconPlaylistAdd,
+    IconHome,
+    IconHandClick,
+    IconTimeline,
+} from "@tabler/icons-react";
 const Miannavbar = () => {
     const user = useSelector((state: { user: Usertype }) => state);
 
@@ -24,9 +31,9 @@ const Miannavbar = () => {
                     </div>
                     {
                         user.user.status ? (
-                            <div className='flex gap-4 items-center'>
-                                <Link href='/dashboard'>
-                                    Dashboard
+                            <div className=''>
+                                <Link className='flex gap-2 text-white  items-center' href='/dashboard'>
+                                    <IconLayoutDashboard className="h-10 w-8" />
                                 </Link>
 
                             </div>

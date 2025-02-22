@@ -66,7 +66,7 @@ export default function AppWrapper({ children }: { children: React.ReactNode }) 
 
     return loading ? (
         <div className="flex items-center justify-center h-screen">
-            <Loader loadingStates={loadingStates} duration={1000} loop={false} loading={loading} />
+            <Loader  loadingStates={loadingStates} duration={1000} loop={false} loading={loading} />
         </div>
     ) : (
         children

@@ -14,6 +14,7 @@ import {
 import logo from "../../public/logo.png";
 import { useSelector } from "react-redux";
 import userType from "@/types/user.type";
+import { useToast } from "@/hooks/use-toast";
 
 export function Sidebar() {
     const pathname = usePathname(); // Get the current route
@@ -52,8 +53,17 @@ export function Sidebar() {
         },
     ];
 
+    const { toast } = useToast();
+
+    function calltoast() {
+        toast({
+            title: "Logout",
+            description: "You have been logged out",
+        });
+    }
+
     return (
-        <aside className="inset-y-0 lg:flex hidden flex-col justify-between h-screen w-full  md:w-80 bg-[#0F172A] shadow-xl transition-all duration-300 ease-in-out">
+        <aside className="inset-y-0 lg:flex hidden flex-col justify-between h-screen w-full  md:w-80 bg-[#09090B] shadow-xl transition-all duration-300 ease-in-out">
             {/* Header */}
             <div>
                 <div className="p-6 border-b border-gray-800">
@@ -96,18 +106,19 @@ export function Sidebar() {
             </div>
 
             {/* Bottom Buttons */}
-            <div className="p-4 space-y-3 border-t border-gray-800 mt-auto">
+            <div className="p-3 space-y-2 border-t border-gray-900 mt-auto">
                 <div
-                    className={`flex items-center gap-3 px-4 py-3 rounded-lg transition-all duration-200 ${pathname === "/dashboard" ? "bg-gray-700 text-white" : "bg-gray-800 text-white hover:bg-gray-700"
+                    onClick={calltoast}
+                    className={`flex items-center gap-3 px-3 py-3 rounded-lg transition-all duration-200 ${pathname === "/dashboard" ? "bg-black border text-white" : "bg-black text-white hover:bg-opacity-90 hover:transform hover:scale-[1.02] active:scale-[0.98]"
                         }`}
                 >
-                    <div className="h-10 w-10 bg-blue-500 rounded-full flex items-center justify-center">
-                        <h2>{user.username.slice(0, 2)}</h2>
+                    <div className="h-6 w-6 bg-blue-800  rounded-full flex items-center justify-center">
+                        <h2 className="text-[10px]">{user.username.slice(0, 2)}</h2>
                     </div>
                     <span className="font-medium">{user.username}</span>
                 </div>
 
-                <button className="w-full px-3 py-3 rounded-lg bg-red-600 text-white font-medium transition-all duration-200 hover:bg-opacity-90 hover:transform hover:scale-[1.02] active:scale-[0.98]">
+                <button className="w-full px-2 py-2 rounded-lg bg-black border text-white font-medium transition-all duration-200 hover:bg-opacity-90 hover:transform hover:scale-[1.02] active:scale-[0.98]">
                     Logout
                 </button>
             </div>
