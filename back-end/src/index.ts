@@ -9,6 +9,8 @@ import prisma from './utils/prishmaconnection';
 import router from './routes/auth';
 import urlrouter from "./routes/url";
 import { errorHandler } from './middleware/errorhandlers';
+import dashboardrouter from './routes/dashboard';
+
 
 dotenv.config();
 
@@ -35,9 +37,9 @@ app.use(express.json());
 app.use(cookieParser());
 app.use(helmet());
 app.use(morgan('combined'));
-
 app.use("/user", router);
 app.use("/url", urlrouter);
+app.use("/dashboard", dashboardrouter);
 
 // Error handling middleware should be last
 app.use(errorHandler);

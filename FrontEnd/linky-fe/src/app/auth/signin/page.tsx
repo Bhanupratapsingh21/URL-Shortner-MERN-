@@ -9,7 +9,7 @@ import { setUser } from "@/store/authSlice";
 import { useToast } from "@/hooks/use-toast";
 import { isAxiosError } from "axios";
 import { useDispatch } from "react-redux";
-
+import Link from "next/link";
 interface userrequest {
   id: string
   username: string
@@ -132,11 +132,11 @@ export default function Page() {
                 </div>
                 <div className="flex items-center justify-between mt-6">
                   <span className="w-1/5 border-b dark:border-gray-600 md:w-1/4"></span>
-                  <a
+                  <Link
                     className="text-xs text-gray-500 uppercase dark:text-gray-400 hover:underline"
-                    href="#"
-                  >or sign up</a
-                  >
+                    href="/auth/signup"
+                  >or sign up
+                  </Link>
                   <span className="w-1/5 border-b dark:border-gray-400 md:w-1/4"></span>
                 </div>
               </div>

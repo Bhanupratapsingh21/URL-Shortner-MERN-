@@ -31,7 +31,7 @@ router.post("/login", async (req, res, next) => {
   }
 });
 
-router.post("/logout", authMiddleware, async (req, res, next) => {
+router.get("/logout", async (req, res, next) => {
   try {
     await logout(req, res);
   } catch (error) {
@@ -70,6 +70,7 @@ router.get("/getuser", authMiddleware, async (req, res, next) => {
     next(error);
   }
 });
+
 
 router.get("/welcome", async (req, res, next) => {
   try {

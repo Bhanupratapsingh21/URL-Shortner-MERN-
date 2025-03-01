@@ -2,7 +2,6 @@ import { NextFunction, Request, Response } from "express";
 import { ApiError, ApiResponse } from "../utils/Responses";
 import prisma from "../utils/prishmaconnection";
 
-
 // Generate a unique short ID
 const genrateShortId = async (): Promise<string> => {
     const shortId = Math.random().toString(36).substring(2, 7);
@@ -135,32 +134,32 @@ const redirectOptimized = async (req: Request, res: Response, next: NextFunction
         if (!redirect) {
             return next(new ApiError(404, "No redirect found for this shortId"));
         }
-         // Detect user device
-         const userAgent = req.headers['user-agent'] || "Unknown";
-         let deviceType = 'Unknown';
-         if (/mobile/i.test(userAgent)) {
-             deviceType = 'Mobile';
-         } else if (/tablet|iPad/i.test(userAgent)) {
-             deviceType = 'Tablet';
-         } else if (/Macintosh|Windows NT|Linux/i.test(userAgent)) {
-             deviceType = 'Desktop';
-         }
- 
-         // Extract client IP address
-         const forwardedFor = Array.isArray(req.headers['x-forwarded-for']) ? req.headers['x-forwarded-for'][0] : req.headers['x-forwarded-for'];
-         const ipAddress = forwardedFor?.split(',')[0] || req.ip || "Unknown";
- 
-         // Log the visit in visitHistory
-         await prisma.visitHistory.create({
-             data: {
-                 linkId: link.id,
-                 ipAddress,
-                 deviceInfo: deviceType,
-                 timestamp: new Date(), // Use a full DateTime object
-             },
-         });
- 
-         // Redirect the user to the original URL
+        // Detect user device
+        const userAgent = req.headers['user-agent'] || "Unknown";
+        let deviceType = 'Unknown';
+        if (/mobile/i.test(userAgent)) {
+            deviceType = 'Mobile';
+        } else if (/tablet|iPad/i.test(userAgent)) {
+            deviceType = 'Tablet';
+        } else if (/Macintosh|Windows NT|Linux/i.test(userAgent)) {
+            deviceType = 'Desktop';
+        }
+
+        // Extract client IP address
+        const forwardedFor = Array.isArray(req.headers['x-forwarded-for']) ? req.headers['x-forwarded-for'][0] : req.headers['x-forwarded-for'];
+        const ipAddress = forwardedFor?.split(',')[0] || req.ip || "Unknown";
+
+        // Log the visit in visitHistory
+        await prisma.visitHistory.create({
+            data: {
+                linkId: link.id,
+                ipAddress,
+                deviceInfo: deviceType,
+                timestamp: new Date(), // Use a full DateTime object
+            },
+        });
+
+        // Redirect the user to the original URL
         res.status(302).redirect(redirect.url);
     } catch (error) {
         next(new ApiError(500, error instanceof Error ? error.message : "An unknown error occurred"));
@@ -190,6 +189,7 @@ const getLinkStats = async (req: Request, res: Response, next: NextFunction) => 
         next(new ApiError(500, error instanceof Error ? error.message : "An unknown error occurred"));
     }
 };
+
 
 export {
     createLink,
