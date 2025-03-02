@@ -85,12 +85,6 @@ export default function Dashboard({
         return date >= startDate;
     });
 
-    const formatClickCount = (count: number) => {
-        if (count >= 1000) {
-            return (count / 1000).toFixed(1) + "K";
-        }
-        return count.toString();
-    };
 
     return (
         <div className="h-max w-full text-white">
@@ -229,45 +223,6 @@ export default function Dashboard({
                                 </ChartContainer>
                             </CardContent>
                         </Card>
-                    </div>
-                </div>
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                    <div className="bg-black rounded-xl border border-gray-200 p-6">
-                        <div className="flex justify-between items-center">
-                            <div>
-                                <p className="text-sm text-gray-600">Total Clicks</p>
-                                <h3 className="text-2xl font-bold mt-2">
-                                    {formatClickCount(totalClicks)}
-                                </h3>
-                            </div>
-                            <div className="w-8 h-8  rounded-full flex items-center justify-center">
-                                <IconHandFinger className="h-full text-green-400 w-full" />
-                            </div>
-                        </div>
-
-                    </div>
-
-                    <div className="bg-black rounded-xl border border-gray-200 p-6">
-                        <h4 className="text-base font-semibold mb-4">Device Distribution</h4>
-                        <div className="space-y-4">
-                            {deviceStats.map((stat) => (
-                                <div
-                                    key={stat.device}
-                                    className="flex items-center justify-between"
-                                >
-                                    <div className="flex items-center">
-                                        {stat.icon}
-                                        <span className="ml-3">{stat.device}</span>
-                                    </div>
-                                    <div className="flex items-center">
-                                        <span className="font-medium">{stat.percentage}%</span>
-                                        <span className="ml-2 text-sm text-gray-500">
-                                            ({formatClickCount(stat.count)})
-                                        </span>
-                                    </div>
-                                </div>
-                            ))}
-                        </div>
                     </div>
                 </div>
             </section>

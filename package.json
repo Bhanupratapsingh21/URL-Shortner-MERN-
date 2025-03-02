@@ -1,0 +1,21 @@
+{
+  "name": "runer",
+  "version": "1.0.0",
+  "description": "Linky is a powerful SaaS-based URL shortener designed for fans, allowing users to create short links, track analytics, and manage multiple redirections efficiently.",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "b": "cd ./back-end && npm run dev ",
+    "f": " cd ./FrontEnd/linky-fe && npm run dev"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/Bhanupratapsingh21/URL-Shortner-MERN-.git"
+  },
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/Bhanupratapsingh21/URL-Shortner-MERN-/issues"
+  },
+  "homepage": "https://github.com/Bhanupratapsingh21/URL-Shortner-MERN-#readme"
+}

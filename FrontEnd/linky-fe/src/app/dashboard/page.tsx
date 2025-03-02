@@ -7,6 +7,13 @@ import {
     IconDeviceDesktop,
     IconDeviceTablet,
 } from "@tabler/icons-react";
+import { useSelector } from "react-redux";
+import userType from "@/types/user.type";
+import axiosInstance from "@/lib/axiosInstance";
+import link from "@/types/links.types";
+import axios from "axios";
+import { useToast } from "@/hooks/use-toast";
+
 const exampleData = {
     analyticsData: [
         { date: "2024-04-01", desktop: 222, mobile: 150 },
@@ -127,7 +134,43 @@ const exampleData = {
     description: "Custom description" // optional
 };
 
+
 export default function Dashboard() {
+    const { toast } = useToast();
+
+
+
+    const [Links, setLinks] = React.useState<Array<link>>([]);
+    const [loading, setLoading] = React.useState<boolean>(true);
+    const [error, setError] = React.useState<string | null>(null);
+    const [totalLinks, setTotalLinks] = React.useState<number>(0);
+    const [totalActiveLinks, setTotalActiveLinks] = React.useState<number>(0);
+
+    const user = useSelector((state: { user: userType }) => state.user);
+    const fetchdata = async () => {
+        setLoading(true);
+        try {
+            const response = await axiosInstance.get("/user/dashboard");
+            if (response.data.status) {
+                setLinks(response.data.links);
+                setTotalLinks(response.data.data.totalLinks);
+                setTotalActiveLinks(response.data.data.totalActiveLinks);
+            }
+        } catch (error) {
+            if (axios.isAxiosError(error)) {
+                toast({
+                    title: error.response?.data.message,
+                    variant: "destructive"
+                });
+            }
+            console.log(error);
+            toast({
+                title: "An error occurred",
+                description: "Something went wrong. Please try again later.",
+                variant: "destructive"
+            });
+        }
+    };
 
     return (
         <>
