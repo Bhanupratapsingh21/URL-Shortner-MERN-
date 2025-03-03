@@ -35,7 +35,7 @@ const CreateRedirectPage = () => {
         try {
             const response = await axios.post<CreateRedirectResponse>(
                 `${process.env.NEXT_PUBLIC_API_BASE_URL}/url/createUrl`,
-                shortId ? { shortId } : {},
+                shortId ? { shortIdfromuser : shortId } : {},
                 {
                     withCredentials: true
                 }

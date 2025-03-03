@@ -15,6 +15,9 @@ export default {
 	],
 	theme: {
 		extend: {
+			fontFamily: {
+				venite: ["Venite Adoremus", "sans-serif"],
+			},
 			colors: {
 				background: 'hsl(var(--background))',
 				foreground: 'hsl(var(--foreground))',

@@ -3,7 +3,7 @@ import "./globals.css";
 import ReduxProvider from "@/store/Provider";
 import { Toaster } from "@/components/ui/toaster";
 import type { Metadata } from "next";
-import AppWrapper from "@/utils/SessionWrapper"; // Import the wrapper
+import AppWrapper from "@/utils/SessionWrapper";
 
 export const metadata: Metadata = {
   title: "Create Next App",
@@ -19,7 +19,6 @@ const geistMono = Geist_Mono({
   variable: "--font-geist-mono",
   subsets: ["latin"],
 });
-
 
 export default function RootLayout({
   children,
@@ -37,7 +36,6 @@ export default function RootLayout({
             <Toaster />
           </AppWrapper>
         </ReduxProvider>
-
       </body>
     </html>
   );

@@ -19,11 +19,23 @@ const getAllLinks = async (req: Request, res: Response, next: NextFunction) => {
             }
         });
 
-        // Compute active status for each link (but remove visitHistory)
-        const formattedLinks = links.map(({ visitHistory, ...link }) => ({
-            ...link,
-            active: visitHistory.length > 0
-        }));
+        const currentTime = new Date();
+        const currentHourMinute = currentTime.toISOString().slice(11, 16); // Extract HH:mm format
+
+        // Compute active status for each link, active redirects, and visit count
+        const formattedLinks = links.map(({ visitHistory, redirects, ...link }) => {
+            // Filter active redirects
+            const activeRedirects = redirects.filter(redirect => {
+                return redirect.startTime <= currentHourMinute && redirect.endTime >= currentHourMinute;
+            });
+
+            return {
+                ...link,
+                active: visitHistory.length > 0,
+                totalVisits: visitHistory.length, // Total visit count for this link
+                activeRedirectsCount: activeRedirects.length // Active redirects count
+            };
+        });
 
         // Count total links and total redirects
         const totalLinks = links.length;
@@ -61,7 +73,7 @@ const getAllLinks = async (req: Request, res: Response, next: NextFunction) => {
             .map(([time, count]) => ({ time, count }))[0] || { time: "N/A", count: 0 };
 
         res.status(200).json(new ApiResponse(200, {
-            links: formattedLinks, // Links with 'active' field but without visitHistory
+            links: formattedLinks, // Links with 'active' field, 'totalVisits', and 'activeRedirectsCount'
             totalLinks,
             totalRedirects,
             totalVisits,
