@@ -12,6 +12,22 @@ const genrateShortId = async (): Promise<string> => {
     return shortId;
 };
 
+const isOverlapping = (newStart: Date, newEnd: Date, existStart: Date, existEnd: Date) => {
+    // Handle cases crossing midnight
+    if (existStart > existEnd) {
+        // Existing redirect crosses midnight
+        return (newStart >= existStart || newStart < existEnd) ||
+            (newEnd >= existStart || newEnd < existEnd);
+    } else if (newStart > newEnd) {
+        // New redirect crosses midnight
+        return (existStart >= newStart || existStart < newEnd) ||
+            (existEnd >= newStart || existEnd < newEnd);
+    } else {
+        // Normal case (within same day)
+        return !(newEnd <= existStart || newStart >= existEnd);
+    }
+};
+
 // Check if a short ID already exists
 const checkforShortId = async (shortId: string) => {
     return await prisma.link.findUnique({ where: { shortId } });
@@ -56,7 +72,6 @@ const createLink = async (req: Request, res: Response, next: NextFunction) => {
     }
 };
 
-// Create a redirect for a short link
 const createRedirect = async (req: Request, res: Response, next: NextFunction) => {
     const { originalUrl, shortId, startTime, endTime } = req.body;
 
@@ -84,18 +99,16 @@ const createRedirect = async (req: Request, res: Response, next: NextFunction) =
         const parsedStartTime = new Date(`1970-01-01T${startTime}:00`);
         const parsedEndTime = new Date(`1970-01-01T${endTime}:00`);
 
-        existingRedirects.forEach((existingRedirect) => {
+        const hasOverlap = existingRedirects.some(existingRedirect => {
             const existingStartTime = new Date(`1970-01-01T${existingRedirect.startTime}`);
             const existingEndTime = new Date(`1970-01-01T${existingRedirect.endTime}`);
 
-            if (
-                (parsedStartTime >= existingStartTime && parsedStartTime < existingEndTime) || // Overlaps at start
-                (parsedEndTime > existingStartTime && parsedEndTime <= existingEndTime) ||    // Overlaps at end
-                (parsedStartTime <= existingStartTime && parsedEndTime >= existingEndTime)    // Fully overlaps
-            ) {
-                throw new ApiError(400, "Redirect time overlaps with an existing redirect.");
-            }
+            return isOverlapping(parsedStartTime, parsedEndTime, existingStartTime, existingEndTime);
         });
+
+        if (hasOverlap) {
+            return next(new ApiError(400, "Redirect time overlaps with an existing redirect."));
+        }
 
         const redirect = await prisma.redirect.create({
             data: {
@@ -112,7 +125,7 @@ const createRedirect = async (req: Request, res: Response, next: NextFunction) =
     }
 };
 
-// Handle redirection based on time
+
 const redirectOptimized = async (req: Request, res: Response, next: NextFunction) => {
     const { shortId } = req.params;
 
@@ -123,17 +136,42 @@ const redirectOptimized = async (req: Request, res: Response, next: NextFunction
             return next(new ApiError(404, "ShortId not found"));
         }
 
-        const redirect = await prisma.redirect.findFirst({
-            where: {
-                linkId: link.id,
-                startTime: { lte: new Date().toISOString().slice(11, 16) },
-                endTime: { gte: new Date().toISOString().slice(11, 16) },
-            },
+        // Get current time in HH:mm format
+        const currentTime = new Date().toLocaleTimeString('en-US', {
+            hour12: false,
+            hour: '2-digit',
+            minute: '2-digit'
         });
 
+        // Function to check if current time is within a time range, handling midnight crossover
+        const isTimeInRange = (startTime: string, endTime: string): boolean => {
+            // Convert times to Date objects for easier comparison
+            const start = new Date(`1970-01-01T${startTime}:00`);
+            const end = new Date(`1970-01-01T${endTime}:00`);
+            const current = new Date(`1970-01-01T${currentTime}:00`);
+
+            // Handle case where end time is earlier than start time (crosses midnight)
+            if (end < start) {
+                return current >= start || current <= end;
+            }
+
+            // Normal case within same day
+            return current >= start && current <= end;
+        };
+
+        const redirects = await prisma.redirect.findMany({
+            where: {
+                linkId: link.id
+            }
+        });
+
+        // Find the first redirect that matches the current time
+        const redirect = redirects.find(r => isTimeInRange(r.startTime, r.endTime));
+
         if (!redirect) {
-            return next(new ApiError(404, "No redirect found for this shortId"));
+            return next(new ApiError(404, `No active redirect found for ${currentTime}`));
         }
+
         // Detect user device
         const userAgent = req.headers['user-agent'] || "Unknown";
         let deviceType = 'Unknown';
@@ -166,34 +204,11 @@ const redirectOptimized = async (req: Request, res: Response, next: NextFunction
     }
 };
 
-// Fetch stats for a short link
-const getLinkStats = async (req: Request, res: Response, next: NextFunction) => {
-    const { shortId } = req.params;
 
-    try {
-        const link = await prisma.link.findUnique({ where: { shortId } });
-
-        if (!link) {
-            return res.status(404).json(new ApiResponse(404, null, "Short URL not found."));
-        }
-
-        if (link.createdById !== req.user?.id) {
-            return next(new ApiError(401, "Unauthorized"));
-        }
-
-        const redirects = await prisma.redirect.findMany({ where: { linkId: link.id } });
-        const visits = await prisma.visitHistory.findMany({ where: { linkId: link.id } });
-
-        res.status(200).json(new ApiResponse(200, { link, redirects, visits }, "Link stats fetched successfully"));
-    } catch (error) {
-        next(new ApiError(500, error instanceof Error ? error.message : "An unknown error occurred"));
-    }
-};
 
 
 export {
     createLink,
     createRedirect,
     redirectOptimized,
-    getLinkStats,
 };

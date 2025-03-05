@@ -1,45 +1,12 @@
-import React, { useState, useEffect } from 'react';
-import { useSearchParams } from 'next/navigation';
-import axios from 'axios';
-import { useToast } from '@/hooks/use-toast';
 import { Card, CardHeader, CardTitle, CardContent } from '@/components/ui/card';
-
-interface Redirect {
-    id: string;
-    url: string;
-    startTime: string;
-    endTime: string;
-    createdAt: string;
-}
+import Redirect from '@/types/redirect.type';
 
 interface ActiveRedirectsProps {
-    shortId: string;
-    id: string;
-    onUpdate: () => void;
+    loading: boolean;
+    redirects: Redirect[] | [];
 }
 
-// Active Redirects Component
-const ActiveRedirects: React.FC<ActiveRedirectsProps> = ({ shortId, id, onUpdate }) => {
-    const [redirects, setRedirects] = useState<Redirect[]>([]);
-    const [loading, setLoading] = useState(true);
-    const { toast } = useToast();
-    const fetchRedirects = async () => {
-        try {
-            const response = await axios.get(`${process.env.NEXT_PUBLIC_API_BASE_URL}/url/redirects`, {
-                params: { shortId, id },
-                withCredentials: true
-            });
-            setRedirects(response.data);
-        } catch (error) {
-            //toast.error('Failed to fetch active redirects');
-        } finally {
-            setLoading(false);
-        }
-    };
-
-    useEffect(() => {
-        fetchRedirects();
-    }, [shortId, id]);
+const ActiveRedirects: React.FC<ActiveRedirectsProps> = ({ redirects, loading }) => {
 
     if (loading) {
         return <div className="text-center py-4">Loading active redirects...</div>;

@@ -19,21 +19,16 @@ const getAllLinks = async (req: Request, res: Response, next: NextFunction) => {
             }
         });
 
-        const currentTime = new Date();
-        const currentHourMinute = currentTime.toISOString().slice(11, 16); // Extract HH:mm format
-
         // Compute active status for each link, active redirects, and visit count
         const formattedLinks = links.map(({ visitHistory, redirects, ...link }) => {
             // Filter active redirects
-            const activeRedirects = redirects.filter(redirect => {
-                return redirect.startTime <= currentHourMinute && redirect.endTime >= currentHourMinute;
-            });
+
 
             return {
                 ...link,
                 active: visitHistory.length > 0,
                 totalVisits: visitHistory.length, // Total visit count for this link
-                activeRedirectsCount: activeRedirects.length // Active redirects count
+                activeRedirectsCount: redirects.length // Active redirects count
             };
         });
 
@@ -85,4 +80,59 @@ const getAllLinks = async (req: Request, res: Response, next: NextFunction) => {
     }
 };
 
-export { getAllLinks };
+
+
+const getAllRedirects = async (req: Request, res: Response, next: NextFunction) => {
+    const { shortId } = req.params;
+
+    try {
+        const link = await prisma.link.findUnique({ where: { shortId } });
+
+        if (!link) {
+            return res.status(404).json(new ApiResponse(404, null, "Short URL not found."));
+        }
+
+        if (link.createdById !== req.user?.id) {
+            return next(new ApiError(401, "Unauthorized"));
+        }
+
+        const redirects = await prisma.redirect.findMany({ where: { linkId: link.id } });
+
+
+        res.status(200).json(new ApiResponse(200, { link, redirects }, "Link stats fetched successfully"));
+    } catch (error) {
+        next(new ApiError(500, error instanceof Error ? error.message : "An unknown error occurred"));
+    }
+};
+
+
+// Fetch stats for a short link
+const getLinkStats = async (req: Request, res: Response, next: NextFunction) => {
+    const { shortId } = req.params;
+
+    try {
+        const link = await prisma.link.findUnique({ where: { shortId } });
+
+        if (!link) {
+            return res.status(404).json(new ApiResponse(404, null, "Short URL not found."));
+        }
+
+        if (link.createdById !== req.user?.id) {
+            return next(new ApiError(401, "Unauthorized"));
+        }
+
+        const redirects = await prisma.redirect.findMany({ where: { linkId: link.id } });
+        const visits = await prisma.visitHistory.findMany({ where: { linkId: link.id } });
+
+        res.status(200).json(new ApiResponse(200, { link, redirects, visits }, "Link stats fetched successfully"));
+    } catch (error) {
+        next(new ApiError(500, error instanceof Error ? error.message : "An unknown error occurred"));
+    }
+};
+
+
+export {
+    getAllLinks,
+    getAllRedirects,
+    getLinkStats
+};

@@ -198,7 +198,7 @@ export default function Dashboard() {
                                 </div>
                             </div>
                         </section>
-                        <div className="py-6 px-6 rounded-2xl font-venite w-max text-4xl">
+                        <div className="py-8 px-6 rounded-2xl font-bold font-sans w-max text-5xl">
                             <h2>All Links</h2>
                         </div>
                         <div className="w-full h-full px-16">

@@ -3,7 +3,6 @@ import {
     createLink,
     createRedirect,
     redirectOptimized,
-    getLinkStats
 } from "../controller/Url.controllers";
 
 const router = Router();
@@ -38,14 +37,6 @@ router.post("/createRedirect", async (req, res, next) => {
     }
 });
 
-
-router.get("/getLinkStats/:shortId", async (req, res, next) => {
-    try {
-        await getLinkStats(req, res, next);
-    } catch (error) {
-        next(error);
-    }
-});
 
 router.get('/links', async (_req, res) => {
     try {
