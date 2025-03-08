@@ -26,7 +26,6 @@ const ActiveRedirects: React.FC<ActiveRedirectsProps> = ({ redirects, loading })
                                 <span>Start: {redirect.startTime}</span>
                                 <span>End: {redirect.endTime}</span>
                             </div>
-                            <p className="text-xs text-slate-500 mt-1">Created: {new Date(redirect.createdAt).toLocaleString()}</p>
                         </div>
                     ))}
                     {redirects.length === 0 && (

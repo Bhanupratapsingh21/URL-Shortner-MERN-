@@ -105,34 +105,134 @@ const getAllRedirects = async (req: Request, res: Response, next: NextFunction) 
     }
 };
 
-
 // Fetch stats for a short link
 const getLinkStats = async (req: Request, res: Response, next: NextFunction) => {
     const { shortId } = req.params;
 
+    if (!shortId) {
+        return next(new ApiError(401, "Unauthorized"));
+    }
+
     try {
-        const link = await prisma.link.findUnique({ where: { shortId } });
+        // Fetch link data with redirects, visit history count, and device info
+        const link = await prisma.link.findUnique({
+            where: { shortId },
+            include: {
+                redirects: true,
+                _count: { select: { visitHistory: true } }, // Count total visits
+                visitHistory: { select: { timestamp: true, deviceInfo: true } } // Fetch timestamps & device info
+            }
+        });
 
         if (!link) {
             return res.status(404).json(new ApiResponse(404, null, "Short URL not found."));
         }
 
-        if (link.createdById !== req.user?.id) {
-            return next(new ApiError(401, "Unauthorized"));
-        }
+        // Total visit count
+        const totalVisits = link._count.visitHistory;
 
-        const redirects = await prisma.redirect.findMany({ where: { linkId: link.id } });
-        const visits = await prisma.visitHistory.findMany({ where: { linkId: link.id } });
+        // Analyze peak visit timestamp
+        const visitTimestamps: Record<string, number> = {};
+        const deviceCounts: Record<string, number> = {}; // Track device usage
 
-        res.status(200).json(new ApiResponse(200, { link, redirects, visits }, "Link stats fetched successfully"));
+        link.visitHistory.forEach(visit => {
+            const hour = new Date(visit.timestamp).getHours().toString().padStart(2, "0") + ":00";
+            visitTimestamps[hour] = (visitTimestamps[hour] || 0) + 1;
+
+            // Track device info
+            if (visit.deviceInfo) {
+                deviceCounts[visit.deviceInfo] = (deviceCounts[visit.deviceInfo] || 0) + 1;
+            }
+        });
+
+        // Get most common visit hour
+        const peakVisitTime = Object.entries(visitTimestamps)
+            .sort((a, b) => b[1] - a[1])
+            .map(([time, count]) => ({ time, count }))[0] || { time: "N/A", count: 0 };
+
+        // Get top 3 devices
+        const topDevices = Object.entries(deviceCounts)
+            .sort((a, b) => b[1] - a[1]) // Sort by count descending
+            .slice(0, 3) // Get top 3
+            .map(([device, count]) => ({ device, count }));
+
+        res.status(200).json(new ApiResponse(200, {
+            link,
+            totalVisits,
+            peakVisitTime,
+            topDevices
+        }, "Link stats fetched successfully"));
     } catch (error) {
         next(new ApiError(500, error instanceof Error ? error.message : "An unknown error occurred"));
     }
 };
 
 
+// Fetch stats for a short link
+const getChartsdataforLink = async (req: Request, res: Response, next: NextFunction) => {
+    const { shortId } = req.params;
+
+    if (!shortId) {
+        return next(new ApiError(401, "Unauthorized"));
+    }
+
+    try {
+        // Fetch link data with redirects, visit history count, and device info
+        const link = await prisma.link.findUnique({
+            where: { shortId },
+            include: {
+                redirects: true,
+                _count: { select: { visitHistory: true } }, // Count total visits
+                visitHistory: { select: { timestamp: true, deviceInfo: true } } // Fetch timestamps & device info
+            }
+        });
+
+        if (!link) {
+            return res.status(404).json(new ApiResponse(404, null, "Short URL not found."));
+        }
+
+        // Total visit count
+        const totalVisits = link._count.visitHistory;
+
+        // Analyze peak visit timestamp
+        const visitTimestamps: Record<string, number> = {};
+        const deviceCounts: Record<string, number> = {}; // Track device usage
+
+        link.visitHistory.forEach(visit => {
+            const hour = new Date(visit.timestamp).getHours().toString().padStart(2, "0") + ":00";
+            visitTimestamps[hour] = (visitTimestamps[hour] || 0) + 1;
+
+            // Track device info
+            if (visit.deviceInfo) {
+                deviceCounts[visit.deviceInfo] = (deviceCounts[visit.deviceInfo] || 0) + 1;
+            }
+        });
+
+        // Get most common visit hour
+        const peakVisitTime = Object.entries(visitTimestamps)
+            .sort((a, b) => b[1] - a[1])
+            .map(([time, count]) => ({ time, count }))[0] || { time: "N/A", count: 0 };
+
+        // Get top 3 devices
+        const topDevices = Object.entries(deviceCounts)
+            .sort((a, b) => b[1] - a[1]) // Sort by count descending
+            .slice(0, 3) // Get top 3
+            .map(([device, count]) => ({ device, count }));
+
+        res.status(200).json(new ApiResponse(200, {
+            link,
+            totalVisits,
+            peakVisitTime,
+            topDevices
+        }, "Link stats fetched successfully"));
+    } catch (error) {
+        next(new ApiError(500, error instanceof Error ? error.message : "An unknown error occurred"));
+    }
+};
+
 export {
     getAllLinks,
     getAllRedirects,
-    getLinkStats
+    getLinkStats,
+    getChartsdataforLink
 };

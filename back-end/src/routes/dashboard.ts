@@ -1,6 +1,11 @@
 import { Router } from 'express';
 
-import { getAllLinks, getAllRedirects, getLinkStats } from '../controller/dashboardcontroller';
+import {
+    getAllLinks,
+    getAllRedirects,
+    getLinkStats,
+    getChartsdataforLink
+} from '../controller/dashboardcontroller';
 import { authMiddleware } from '../middleware/auth.Middleware';
 
 
@@ -20,6 +25,14 @@ router.get("/getallLinks", async (req, res, next) => {
 router.get("/getLinkRedirects/:shortId", async (req, res, next) => {
     try {
         await getAllRedirects(req, res, next);
+    } catch (error) {
+        next(error);
+    }
+});
+
+router.get("/getLinkchartdata/:shortId", async (req, res, next) => {
+    try {
+        await getChartsdataforLink(req, res, next);
     } catch (error) {
         next(error);
     }

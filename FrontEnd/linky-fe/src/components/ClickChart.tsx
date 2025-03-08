@@ -89,21 +89,7 @@ export default function Dashboard({
     return (
         <div className="h-max w-full text-white">
             <section id="" className="p-6 space-y-6">
-                <div className="bg-black rounded-xl border border-gray-200 p-6">
-                    <div className="flex justify-between items-center mb-6">
-                        <h3 className="text-lg font-semibold">{title}</h3>
-                        <div className="flex space-x-2">
-                            <button className="px-3 py-1.5 text-sm border border-gray-300 rounded-lg hover:bg-gray-50">
-                                7 Days
-                            </button>
-                            <button className="px-3 py-1.5 text-sm border border-gray-300 rounded-lg hover:bg-gray-50">
-                                30 Days
-                            </button>
-                            <button className="px-3 py-1.5 text-sm bg-accent-600 text-white rounded-lg">
-                                Custom
-                            </button>
-                        </div>
-                    </div>
+                <div className="bg-black rounded-xl border border-gray-200 ">
                     <div id="clicksChart" className="w-full h-max">
                         <Card>
                             <CardHeader className="flex items-center gap-2 space-y-0 border-b py-5 sm:flex-row">

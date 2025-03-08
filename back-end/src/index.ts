@@ -10,6 +10,7 @@ import router from './routes/auth';
 import urlrouter from "./routes/url";
 import { errorHandler } from './middleware/errorhandlers';
 import dashboardrouter from './routes/dashboard';
+import { redirectOptimized } from './controller/Url.controllers';
 
 
 dotenv.config();
@@ -40,7 +41,13 @@ app.use(morgan('combined'));
 app.use("/user", router);
 app.use("/url", urlrouter);
 app.use("/dashboard", dashboardrouter);
-
+app.use("/:shortId", async (req, res, next) => {
+    try {
+        await redirectOptimized(req, res, next);
+    } catch (error) {
+        next(error);
+    }
+});
 // Error handling middleware should be last
 app.use(errorHandler);
 

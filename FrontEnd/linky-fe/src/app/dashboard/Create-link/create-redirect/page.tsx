@@ -1,6 +1,6 @@
 "use client";
 import React, { useState, useEffect } from 'react';
-import { redirect, useSearchParams } from 'next/navigation';
+import { useSearchParams } from 'next/navigation';
 import axios from 'axios';
 import { useToast } from '@/hooks/use-toast';
 import { Card, CardHeader, CardTitle, CardContent } from '@/components/ui/card';
@@ -42,7 +42,6 @@ const CreateRedirectPage: React.FC = () => {
             })
             setFormData({ ...formData, url: '' }); // Reset URL field
             fetchredirects();
-            // onUpdate(); // Trigger refresh of active redirects
         } catch (error: unknown) {
             if (axios.isAxiosError(error)) {
                 console.log(error.response?.data);
