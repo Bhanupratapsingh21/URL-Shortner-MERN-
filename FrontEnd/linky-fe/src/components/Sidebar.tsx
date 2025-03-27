@@ -61,13 +61,7 @@ export function Sidebar() {
         {
             title: "Active Links",
             icon: <IconHandClick className="h-full w-full" />,
-            href: "/components",
-        },
-
-        {
-            title: "Profile",
-            icon: <IconUser className="h-full w-full" />,
-            href: "https://twitter.com",
+            href: "/dashboard/Active-Links",
         },
     ];
 
@@ -119,7 +113,7 @@ export function Sidebar() {
     }
     return (
         <>
-            <aside className="inset-y-0 lg:flex hidden flex-col justify-between h-screen w-full  md:w-80 bg-[#09090B] shadow-xl transition-all duration-300 ease-in-out">
+            <aside className="inset-y-0 lg:flex hidden flex-col justify-between h-screen w-full border-r rounded-lg   md:w-80 bg-[#09090B] shadow-xl transition-all duration-300 ease-in-out">
                 {/* Header */}
                 <div>
                     <div className="p-6 border-b border-gray-800">

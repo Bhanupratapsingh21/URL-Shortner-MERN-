@@ -31,7 +31,7 @@ router.post("/login", async (req, res, next) => {
   }
 });
 
-router.get("/logout", async (req, res, next) => {
+router.get("/logout", authMiddleware ,async (req, res, next) => {
   try {
     await logout(req, res);
   } catch (error) {
