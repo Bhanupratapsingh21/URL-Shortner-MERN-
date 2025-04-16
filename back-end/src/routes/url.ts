@@ -2,6 +2,10 @@ import { Router } from 'express';
 import {
     createLink,
     createRedirect,
+    deleteLink,
+    deleteRedirect,
+    editRedirect,
+    getLink,
     redirectOptimized,
 } from "../controller/Url.controllers";
 
@@ -48,6 +52,33 @@ router.get('/links', async (_req, res) => {
     }
 });
 
+router.patch('/editRedirect/', async (req, res, next) => {
+    try {
+        await editRedirect(req, res, next);
+    } catch (error) {
+        next(error);
+    }
+});
 
+
+router.delete('/deleteLink/', async (req, res, next) => {
+    try {
+        await deleteLink(req, res, next);
+    } catch (error) {
+        next(error);
+    }
+});
+
+
+router.delete('/deleteredirect/', async (req, res, next) => {
+    try {
+        await deleteRedirect(req, res, next);
+    } catch (error) {
+        next(error);
+    }
+});
+
+
+router.get('/getLink', getLink);
 
 export default router;

@@ -60,7 +60,7 @@ const LinksCards = ({ links }: { links: ExtendedLink[] }) => {
                             <div className="flex items-center gap-2">
                                 <span className="text-xs font-medium text-slate-400">Created On : {link.createdAt.slice(0, 10)}</span>
                             </div>
-                
+
                             <Link
                                 href={`/dashboard/Link?id=${link.id}&shortId=${link.shortId}`}
                                 className="flex items-center gap-1 rounded-lg bg-gradient-to-r from-indigo-500 to-purple-500 px-3 py-1 text-xs font-medium text-white transition-all duration-300 hover:from-indigo-600 hover:to-purple-600"

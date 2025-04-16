@@ -8,6 +8,8 @@ import Redirect from '@/types/redirect.type';
 import { IconClock, IconHandFinger, IconLink, IconLoadBalancer } from '@tabler/icons-react';
 import formatClickCount from '@/utils/formatcount';
 import transformDeviceData from "@/utils/formatdevices";
+import Link from 'next/link';
+import { useRouter } from 'next/navigation';
 
 const Page: React.FC = () => {
     const searchParams = useSearchParams();
@@ -15,37 +17,85 @@ const Page: React.FC = () => {
     const shortId = searchParams.get('shortId');
     const [loading, setLoading] = useState(false);
     const { toast } = useToast();
+    const router = useRouter();
     const [redirect, setRedirect] = useState<Redirect[] | []>([]);
     const [topDevices, settopDevices] = React.useState<Array<{ device: string; count: number; percentage: number; icon: React.ReactNode }>>([]);
     const [totalVisits, setTotalVisits] = useState<number>(0);
     const [peakVisitTime, setPeakVisitTime] = useState<string>("Loading...");
-
-    const fetchredirects = async () => {
-        setLoading(true);
+    const handleLinkdelete = async () => {
         try {
-            const response = await axiosInstance.get(`/dashboard/getLinkStats/${shortId}`);
-            if (response.data.data) {
-                setRedirect(response.data.data.link.redirects);
-                settopDevices(transformDeviceData(response.data.data.topDevices));
-                setTotalVisits(response.data.data.totalVisits);
-                setPeakVisitTime(response.data.data.peakVisitTime.time);
-            } else {
-                toast({
-                    title: 'Error While Fetching Redirects',
-                })
-                throw new Error('No data found');
-            }
-        } catch (error) {
-            console.error(error);
+            await axiosInstance.delete(`/url/deletelink?shortId=${shortId}`, { withCredentials: true });
+
             toast({
-                title: 'Error While Fetching Redirects',
-            })
+                title: 'Redirect deleted successfully',
+                description: 'The redirect has been deleted successfully.',
+            });
+            router.push(`/dashboard`);
+        } catch (error: any) {
+            console.error('Delete failed:', error);
+            toast({
+                title: 'Error deleting Link',
+                description: error.response?.data?.message || 'Failed to delete redirect',
+                variant: 'destructive'
+            });
+        } finally {
+
+        }
+    }
+    const fetchRedirects = async () => {
+        setLoading(true);
+
+        try {
+            const { data } = await axiosInstance.get(`/dashboard/getLinkStats/${shortId}`);
+
+            // Handle 404 or missing data
+            if (data.statusCode === 404 || !data.data) {
+                toast({
+                    title: 'No Redirects Found',
+                });
+                router.push(`/dashboard/Create-link/create-redirect?id=${id}&shortId=${shortId}`);
+                return;
+            }
+
+            // Extract and transform data
+            const { link, topDevices, totalVisits, peakVisitTime } = data.data;
+
+            setRedirect(link.redirects);
+            settopDevices(transformDeviceData(topDevices));
+            setTotalVisits(totalVisits);
+            setPeakVisitTime(peakVisitTime.time);
+
+        } catch (error: any) {
+            console.error('Failed to fetch redirects:', error);
+
+            // More specific error messages based on error type
+            const toastTitle = error.response?.status === 404
+                ? 'No Redirects Found'
+                : 'Error While Fetching Redirects';
+
+            // Handle 404 or missing data
+            if (error.response?.status === 404 || !error.response?.data) {
+                toast({
+                    title: 'No Redirects Found',
+                });
+                router.push(`/dashboard/Create-link/create-redirect?id=${id}&shortId=${shortId}`);
+                return;
+            }
+
+            toast({
+                title: toastTitle,
+                description: error.message || 'Please try again later',
+            });
+
+            // Re-throw error if you need to handle it further up the chain
+            throw error;
+
         } finally {
             setLoading(false);
         }
-    }
+    };
     useEffect(() => {
-        fetchredirects();
+        fetchRedirects();
     }, []);
 
     return (
@@ -133,8 +183,16 @@ const Page: React.FC = () => {
                     </div>
                 </div>
             </section>
+            <section className='mt-6 px-6'>
+                <Link href={`/dashboard/Create-link/create-redirect?id=${id}&shortId=${shortId}`} className="text-blue-500 hover:underline mt-2 block">
+                    Create New Redirect
+                </Link>
+                <button onClick={handleLinkdelete} className="text-blue-500 hover:underline mt-2 block">
+                    Delete This Link
+                </button>
+            </section>
             <section className="px-6">
-                <ActiveRedirects redirects={redirect} loading={loading} />
+                <ActiveRedirects shortId={shortId} Id={id} redirects={redirect} loading={loading} />
             </section>
         </div>
     );

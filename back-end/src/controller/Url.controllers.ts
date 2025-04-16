@@ -203,12 +203,198 @@ const redirectOptimized = async (req: Request, res: Response, next: NextFunction
         next(new ApiError(500, error instanceof Error ? error.message : "An unknown error occurred"));
     }
 };
+const editRedirect = async (req: Request, res: Response, next: NextFunction) => {
+    const { redirectId, originalUrl, startTime, endTime } = req.body;
+
+    if (!redirectId || !originalUrl || !startTime || !endTime) {
+        return next(new ApiError(400, "Missing required fields"));
+    }
+
+    if (!isValidTime(startTime) || !isValidTime(endTime)) {
+        return next(new ApiError(400, "Invalid time format. Expected format: HH:mm"));
+    }
+
+    try {
+        // Find the redirect to edit
+        const redirect = await prisma.redirect.findUnique({
+            where: { id: redirectId },
+            include: { link: true } // Include the associated link
+        });
+
+        if (!redirect) {
+            return next(new ApiError(404, "Redirect not found"));
+        }
+
+        // Check if the user owns the associated link
+        if (redirect.link.createdById !== req.user?.id) {
+            return next(new ApiError(401, "Unauthorized"));
+        }
+
+        const parsedStartTime = new Date(`1970-01-01T${startTime}:00`);
+        const parsedEndTime = new Date(`1970-01-01T${endTime}:00`);
+
+        // Check for time overlaps with other redirects (excluding current redirect)
+        const existingRedirects = await prisma.redirect.findMany({
+            where: {
+                linkId: redirect.linkId,
+                NOT: { id: redirectId } // Exclude current redirect
+            }
+        });
+
+        const hasOverlap = existingRedirects.some(existingRedirect => {
+            const existingStartTime = new Date(`1970-01-01T${existingRedirect.startTime}`);
+            const existingEndTime = new Date(`1970-01-01T${existingRedirect.endTime}`);
+
+            return isOverlapping(parsedStartTime, parsedEndTime, existingStartTime, existingEndTime);
+        });
+
+        if (hasOverlap) {
+            return next(new ApiError(400, "New redirect time overlaps with an existing redirect."));
+        }
+
+        // Update the redirect
+        const updatedRedirect = await prisma.redirect.update({
+            where: { id: redirectId },
+            data: {
+                url: originalUrl,
+                startTime,
+                endTime,
+            },
+        });
+
+        res.status(200).json(new ApiResponse(200, updatedRedirect, "Redirect updated successfully"));
+    } catch (error) {
+        next(new ApiError(500, error instanceof Error ? error.message : "An unknown error occurred"));
+    }
+};
+
+const deleteLink = async (req: Request, res: Response, next: NextFunction) => {
+    const { shortId } = req.query as { shortId: string };
+
+    try {
+        const link = await prisma.link.findUnique({ where: { shortId } });
+
+        if (!link) {
+            return next(new ApiError(404, "ShortId not found"));
+        }
+
+        if (link.createdById !== req.user?.id) {
+            return next(new ApiError(401, "Unauthorized"));
+        }
+
+        // Delete all related data (visit history and redirects) in a transaction
+        await prisma.$transaction([
+            prisma.visitHistory.deleteMany({ where: { linkId: link.id } }),
+            prisma.redirect.deleteMany({ where: { linkId: link.id } }),
+            prisma.link.delete({ where: { id: link.id } })
+        ]);
+
+        res.status(200).json(new ApiResponse(200, null, "Link and all associated data deleted successfully"));
+    } catch (error) {
+        next(new ApiError(500, error instanceof Error ? error.message : "An unknown error occurred"));
+    }
+};
+
+const deleteRedirect = async (req: Request, res: Response, next: NextFunction) => {
+    const { shortId, redirectId } = req.query as { shortId: string; redirectId: string };
+
+    try {
+        // First verify the link exists and user owns it
+        const link = await prisma.link.findUnique({
+            where: { shortId },
+            include: {
+                redirects: {
+                    where: { id: redirectId }
+                }
+            }
+        });
+
+        if (!link) {
+            return next(new ApiError(404, "ShortId not found"));
+        }
+
+        if (link.createdById !== req.user?.id) {
+            return next(new ApiError(401, "Unauthorized"));
+        }
+
+        // Check if the redirect exists
+        if (link.redirects.length === 0) {
+            return next(new ApiError(404, "Redirect not found for this short link"));
+        }
+
+        // Delete the redirect
+        await prisma.redirect.delete({
+            where: { id: redirectId }
+        });
+
+        // No need to manually filter the Link.redirects array because:
+        // 1. Prisma automatically maintains the relationship
+        // 2. The next time you query the link with redirects, it will only include existing ones
+        // 3. In-memory arrays should be refreshed from the database anyway
+
+        res.status(200).json(new ApiResponse(200, null, "Redirect deleted successfully"));
+    } catch (error) {
+        next(new ApiError(500, error instanceof Error ? error.message : "An unknown error occurred"));
+    }
+};
 
 
+
+
+const getLink = async (req: Request, res: Response, next: NextFunction) => {
+    try {
+        const { id, shortId } = req.query;
+
+        if (!id && !shortId) {
+            return next(new ApiError(400, "Either id or shortId must be provided"));
+        }
+
+        // Find the link by either id or shortId
+        const link = await prisma.link.findUnique({
+            where: {
+                ...(id ? { id: String(id) } : { shortId: String(shortId) })
+            },
+            include: {
+                redirects: {
+                    orderBy: {
+                        startTime: 'asc' // Order redirects by start time
+                    }
+                },
+                _count: {
+                    select: {
+                        visitHistory: true // Include visit count
+                    }
+                }
+            }
+        });
+
+        if (!link) {
+            return next(new ApiError(404, "Link not found"));
+        }
+
+        // Transform the response data
+        const responseData = {
+            id: link.id,
+            shortId: link.shortId,
+            createdAt: link.createdAt,
+            redirects: link.redirects,
+            totalVisits: link._count.visitHistory,
+            // Add any other relevant fields
+        };
+
+        res.status(200).json(new ApiResponse(200, responseData, "Link retrieved successfully"));
+    } catch (error) {
+        next(new ApiError(500, error instanceof Error ? error.message : "An unknown error occurred"));
+    }
+};
 
 
 export {
     createLink,
     createRedirect,
     redirectOptimized,
+    editRedirect,
+    deleteLink,
+    getLink,
+    deleteRedirect
 };

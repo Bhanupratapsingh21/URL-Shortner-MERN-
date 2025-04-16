@@ -325,7 +325,7 @@ export default function Dashboard() {
                         <div className="py-8 px-6 rounded-2xl font-bold font-sans w-max text-5xl">
                             <h2>All Links</h2>
                         </div>
-                        <div className="w-full h-full px-16">
+                        <div className="w-full h-full pb-6 px-16">
                             {
                                 <LinksCards links={Links} />
                             }

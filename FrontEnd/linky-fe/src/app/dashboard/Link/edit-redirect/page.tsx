@@ -9,13 +9,15 @@ import axiosInstance from '@/lib/axiosInstance';
 import Redirect from '@/types/redirect.type';
 import Link from 'next/link';
 
-const CreateRedirectPage: React.FC = () => {
+const EditRedirectPage: React.FC = () => {
     const searchParams = useSearchParams();
     const id = searchParams.get('id');
     const shortId = searchParams.get('shortId');
-    const [redirectloading, setredirectLoading] = useState(false);
+    const redirectId = searchParams.get('redirectId');
+    const [redirectloading, setRedirectLoading] = useState(false);
     const { toast } = useToast();
-    const [redirect, setRedirect] = useState<Redirect[] | []>([]);
+    const [redirects, setRedirects] = useState<Redirect[] | []>([]);
+    const [linkData, setLinkData] = useState<any>(null);
     const [formData, setFormData] = useState({
         url: '',
         startTime: '09:00',
@@ -28,9 +30,8 @@ const CreateRedirectPage: React.FC = () => {
         setLoading(true);
 
         try {
-            await axios.post(`${process.env.NEXT_PUBLIC_API_BASE_URL}/url/createRedirect`, {
-                id,
-                shortId,
+            await axiosInstance.patch(`/url/editRedirect`, {
+                redirectId,
                 originalUrl: formData.url,
                 startTime: formData.startTime,
                 endTime: formData.endTime
@@ -39,53 +40,56 @@ const CreateRedirectPage: React.FC = () => {
             });
 
             toast({
-                title: 'Redirect created successfully',
-            })
-            setFormData({ ...formData, url: '' }); // Reset URL field
-            fetchredirects();
+                title: 'Redirect updated successfully',
+                description: 'The redirect has been updated successfully.',
+            });
+            fetchRedirects();
         } catch (error: unknown) {
             if (axios.isAxiosError(error)) {
-                console.log(error.response?.data);
                 toast({
-                    title: 'Error creating redirect',
-                    description: error.response?.data?.message || 'An error occurred while creating redirect',
-                })
+                    title: 'Error updating redirect',
+                    description: error.response?.data?.message || 'An error occurred while updating redirect',
+                    variant: 'destructive'
+                });
             }
         } finally {
             setLoading(false);
         }
     };
 
-
     const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
         const { name, value } = e.target;
         setFormData(prev => ({ ...prev, [name]: value }));
     };
 
-    const fetchredirects = async () => {
-        setredirectLoading(true);
+    const fetchRedirects = async () => {
+        setRedirectLoading(true);
         try {
             const { data } = await axiosInstance.get(`/dashboard/getLinkRedirects/${shortId}`);
-            // Handle 404 or missing data
+
             if (data.statusCode === 404 || !data.data) {
                 toast({
                     title: 'No Redirects Found',
+                    variant: 'destructive'
                 });
                 return;
             }
 
-            if (data.data) {
-                setRedirect(data.data.redirects);
-            } else {
-                toast({
-                    title: 'Error While Fetching Redirects',
-                })
-                throw new Error('No data found');
+            setRedirects(data.data.redirects);
+
+            // If we're editing a specific redirect, find and populate its data
+            if (redirectId) {
+                const redirectToEdit = data.data.redirects.find((r: Redirect) => r.id === redirectId);
+                if (redirectToEdit) {
+                    setFormData({
+                        url: redirectToEdit.url,
+                        startTime: redirectToEdit.startTime,
+                        endTime: redirectToEdit.endTime
+                    });
+                }
             }
         } catch (error: any) {
             console.error('Failed to fetch redirects:', error);
-
-            // More specific error messages based on error type
             const toastTitle = error.response?.status === 404
                 ? 'No Redirects Found'
                 : 'Error While Fetching Redirects';
@@ -93,24 +97,40 @@ const CreateRedirectPage: React.FC = () => {
             toast({
                 title: toastTitle,
                 description: error.message || 'Please try again later',
+                variant: 'destructive'
             });
-
-            // Re-throw error if you need to handle it further up the chain
-            throw error;
-
         } finally {
-            setredirectLoading(false);
+            setRedirectLoading(false);
         }
-    }
+    };
+
+    const fetchLink = async () => {
+        try {
+            const { data } = await axiosInstance.get(`/url/getLink?id=${id}&shortId=${shortId}`);
+            setLinkData(data.data.link);
+            //setRedirects(data.data.redirects);
+            console.log(data);
+        } catch (error: any) {
+            toast({
+                title: 'Error fetching link data',
+                description: error.message || 'Failed to load link information',
+                variant: 'destructive'
+            });
+        }
+    };
+
     useEffect(() => {
-        fetchredirects();
-    }, []);
+        fetchLink();
+        fetchRedirects();
+    }, [id, shortId, redirectId]);
 
     return (
         <div className="p-6 bg-[#09090B] w-full h-full mx-auto">
             <Card className="bg-black text-white border-gray-200">
                 <CardHeader>
-                    <CardTitle>Create Redirect</CardTitle>
+                    <CardTitle>
+                        {redirectId ? 'Edit Redirect' : 'Create New Redirect'}
+                    </CardTitle>
                 </CardHeader>
                 <CardContent>
                     <div className="mb-4">
@@ -167,19 +187,37 @@ const CreateRedirectPage: React.FC = () => {
                             disabled={loading}
                             className="w-full px-6 bg-[#9333EA] py-3 hover:bg-accent-700 text-white font-medium rounded-lg transition-colors disabled:opacity-50"
                         >
-                            {loading ? 'Creating...' : 'Create Redirect'}
+                            {loading ? (redirectId ? 'Updating...' : 'Creating...') : (redirectId ? 'Update Redirect' : 'Create Redirect')}
                         </button>
                     </form>
                 </CardContent>
             </Card>
-            <button className=" text-white  mt-4 py-4">
-                <Link href={`/dashboard/Link?${id}&shortId=${shortId}`} className=" text-white text-lg border-gray-200 text-center bg-[#9333EA] hover:bg-accent-700 rounded-lg transition-colors px-4 py-2">
+
+            <div className="mt-4 flex gap-4">
+                <Link
+                    href={`/dashboard/Link?id=${id}&shortId=${shortId}`}
+                    className="text-white text-md border-gray-200 text-center bg-[#9333EA]  rounded-lg transition-colors px-4 py-2"
+                >
                     Show Redirect Data
                 </Link>
-            </button>
-            <ActiveRedirects shortId={shortId} Id={id} redirects={redirect} loading={redirectloading} />
+                {redirectId && (
+                    <Link
+                        href={`/dashboard/redirect/create?id=${id}&shortId=${shortId}`}
+                        className="text-white text-md border-gray-200 text-center bg-[#9333EA]  rounded-lg transition-colors px-4 py-2"
+                    >
+                        Create New Redirect
+                    </Link>
+                )}
+            </div>
+
+            <ActiveRedirects
+                shortId={shortId}
+                Id={id}
+                redirects={redirects}
+                loading={redirectloading}
+            />
         </div>
     );
 };
 
-export default CreateRedirectPage;
+export default EditRedirectPage;
