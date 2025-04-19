@@ -1,11 +1,13 @@
 "use client";
-import React from "react";
+import React, { useState } from "react";
 import ColourfulText from "@/components/ui/colourful-text";
 import { CardBody, CardContainer, CardItem } from "@/components/ui/3d-card";
 import Link from "next/link";
 import MainNavbar from "@/components/Mainpagenavbar";
 
 export default function Home() {
+  const [text, settext] = useState("")
+  const [shortid, setShortId] = useState("")
   return (
     <>
       <MainNavbar />
@@ -22,9 +24,9 @@ export default function Home() {
                 More than just a URL shortener. Get advanced analytics, timed redirects, and powerful tracking features to supercharge your link management.
               </p>
               <div className="flex flex-col sm:flex-row justify-center lg:justify-start gap-4 animate__animated animate__fadeInUp animate__delay-2s">
-                <a href="#" className="bg-indigo-600 text-white px-8 py-4 rounded-lg font-semibold hover:bg-indigo-700 transition-colors">
+                <Link href="/dashboard" className="bg-indigo-600 text-white px-8 py-4 rounded-lg font-semibold hover:bg-indigo-700 transition-colors">
                   Get Started Free
-                </a>
+                </Link>
                 <a href="#features" className="border border-neutral-700 text-white px-8 py-4 rounded-lg font-semibold hover:bg-neutral-800 transition-colors">
                   Learn More
                 </a>
@@ -45,23 +47,23 @@ export default function Home() {
               <div className="bg-neutral-800 p-6 rounded-xl shadow-2xl border border-neutral-700">
                 <div className="space-y-4">
                   <div className="space-y-2">
-                    <label className="text-neutral-300 text-sm font-medium">Enter your long URL</label>
-                    <input type="text" className="w-full px-4 py-3 bg-neutral-900 border border-neutral-700 rounded-lg text-white focus:outline-none focus:border-indigo-500" placeholder="https://your-long-url.com/goes-here" />
-                  </div>
-                  <div className="space-y-2">
                     <label className="text-neutral-300 text-sm font-medium">Customize your link (optional)</label>
                     <div className="flex">
                       <span className="inline-flex items-center px-3 rounded-l-lg border border-r-0 border-neutral-700 bg-neutral-900 text-neutral-400 text-sm">
-                        linky.co/
+                        {process.env.NEXT_PUBLIC_REDIRECT_URL}
                       </span>
-                      <input type="text" className="flex-1 px-4 py-3 bg-neutral-900 border border-neutral-700 rounded-r-lg text-white focus:outline-none focus:border-indigo-500" placeholder="custom-name" />
+                      <input type="text" value={shortid} onChange={(e) => setShortId(e.target.value)} className="flex-1 px-4 py-3 bg-neutral-900 border border-neutral-700 rounded-r-lg text-white focus:outline-none focus:border-indigo-500" placeholder="custom-name" />
                     </div>
                   </div>
-                  <button className="w-full bg-indigo-600 text-white py-3 rounded-lg font-semibold hover:bg-indigo-700 transition-colors">
-                    Shorten URL
-                  </button>
+                  <hr />
+                  <Link className="py-4" href={`/dashboard/Create-link?shortId=${shortid}`}>
+                    <button className="w-full bg-indigo-600 text-white text py-3 rounded-lg font-semibold hover:bg-indigo-700 transition-colors">
+                      Shorten URL
+                    </button>
+                  </Link>
+
                 </div>
-                <div className="mt-6 text-center">
+                <div className="mt-6 text-left">
                   <p className="text-neutral-400 text-sm">By using our service, you agree to our Terms of Service and Privacy Policy</p>
                 </div>
               </div>
@@ -433,15 +435,13 @@ export default function Home() {
                     Join thousands of businesses using Linky to create smarter, more powerful links. Get started for free today.
                   </p>
                   <div className="flex flex-col sm:flex-row gap-4">
-                    <a href="#" className="inline-flex justify-center items-center px-8 py-4 rounded-xl bg-white text-indigo-600 font-semibold hover:bg-neutral-100 transition-colors animate__animated animate__pulse animate__infinite animate__slower">
+                    <Link href="/dashboard" className="inline-flex justify-center items-center px-8 py-4 rounded-xl bg-white text-indigo-600 font-semibold hover:bg-neutral-100 transition-colors animate__animated animate__pulse animate__infinite animate__slower">
                       Start For Free
                       <svg className="w-5 h-5 ml-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 8l4 4m0 0l-4 4m4-4H3" />
                       </svg>
-                    </a>
-                    <a href="#" className="inline-flex justify-center items-center px-8 py-4 rounded-xl bg-transparent border-2 border-white text-white font-semibold hover:bg-white/10 transition-colors">
-                      Schedule Demo
-                    </a>
+                    </Link>
+                   
                   </div>
                 </div>
 
@@ -483,7 +483,7 @@ export default function Home() {
                       </div>
                       <div className="text-white">
                         <h3 className="font-semibold">Money-Back Guarantee</h3>
-                        <p className="text-white/80">30-day no-questions-asked refund</p>
+                        <p className="text-white/80">Ask For Refund Its Free & Open Source</p>
                       </div>
                     </div>
                   </div>
@@ -576,22 +576,18 @@ export default function Home() {
             </div>
 
 
-            <div className="grid grid-cols-2 md:grid-cols-4 gap-8 mt-16 text-center animate__animated animate__fadeIn">
+            <div className="grid grid-cols-2 md:grid-cols-3 gap-8 mt-16 text-center animate__animated animate__fadeIn">
               <div className="p-6 bg-neutral-900 rounded-xl border border-neutral-700">
-                <div className="text-3xl font-bold text-white mb-2">10k+</div>
+                <div className="text-3xl font-bold text-white mb-2">10+</div>
                 <div className="text-neutral-400">Active Users</div>
               </div>
               <div className="p-6 bg-neutral-900 rounded-xl border border-neutral-700">
-                <div className="text-3xl font-bold text-white mb-2">1M+</div>
+                <div className="text-3xl font-bold text-white mb-2">50+</div>
                 <div className="text-neutral-400">Links Created</div>
               </div>
               <div className="p-6 bg-neutral-900 rounded-xl border border-neutral-700">
-                <div className="text-3xl font-bold text-white mb-2">99.9%</div>
+                <div className="text-3xl font-bold text-white mb-2">90.9%</div>
                 <div className="text-neutral-400">Uptime</div>
-              </div>
-              <div className="p-6 bg-neutral-900 rounded-xl border border-neutral-700">
-                <div className="text-3xl font-bold text-white mb-2">24/7</div>
-                <div className="text-neutral-400">Support</div>
               </div>
             </div>
           </div>

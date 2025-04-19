@@ -35,9 +35,7 @@ const EditRedirectPage: React.FC = () => {
                 originalUrl: formData.url,
                 startTime: formData.startTime,
                 endTime: formData.endTime
-            }, {
-                withCredentials: true
-            });
+            }, { withCredentials: true });
 
             toast({
                 title: 'Redirect updated successfully',
@@ -68,16 +66,12 @@ const EditRedirectPage: React.FC = () => {
             const { data } = await axiosInstance.get(`/dashboard/getLinkRedirects/${shortId}`);
 
             if (data.statusCode === 404 || !data.data) {
-                toast({
-                    title: 'No Redirects Found',
-                    variant: 'destructive'
-                });
+                toast({ title: 'No Redirects Found', variant: 'destructive' });
                 return;
             }
 
             setRedirects(data.data.redirects);
 
-            // If we're editing a specific redirect, find and populate its data
             if (redirectId) {
                 const redirectToEdit = data.data.redirects.find((r: Redirect) => r.id === redirectId);
                 if (redirectToEdit) {
@@ -89,13 +83,8 @@ const EditRedirectPage: React.FC = () => {
                 }
             }
         } catch (error: any) {
-            console.error('Failed to fetch redirects:', error);
-            const toastTitle = error.response?.status === 404
-                ? 'No Redirects Found'
-                : 'Error While Fetching Redirects';
-
             toast({
-                title: toastTitle,
+                title: error.response?.status === 404 ? 'No Redirects Found' : 'Error While Fetching Redirects',
                 description: error.message || 'Please try again later',
                 variant: 'destructive'
             });
@@ -108,8 +97,6 @@ const EditRedirectPage: React.FC = () => {
         try {
             const { data } = await axiosInstance.get(`/url/getLink?id=${id}&shortId=${shortId}`);
             setLinkData(data.data.link);
-            //setRedirects(data.data.redirects);
-            console.log(data);
         } catch (error: any) {
             toast({
                 title: 'Error fetching link data',
@@ -125,97 +112,101 @@ const EditRedirectPage: React.FC = () => {
     }, [id, shortId, redirectId]);
 
     return (
-        <div className="p-6 bg-[#09090B] w-full h-full mx-auto">
-            <Card className="bg-black text-white border-gray-200">
-                <CardHeader>
-                    <CardTitle>
-                        {redirectId ? 'Edit Redirect' : 'Create New Redirect'}
-                    </CardTitle>
-                </CardHeader>
-                <CardContent>
-                    <div className="mb-4">
-                        <label className="block text-sm font-medium text-white mb-1">Short ID</label>
-                        <input
-                            type="text"
-                            value={shortId || ''}
-                            className="w-full px-4 bg-[#09090B] py-3 border border-gray-300 rounded-lg text-slate-400"
-                            disabled
-                        />
-                    </div>
-
-                    <form onSubmit={handleSubmit} className="space-y-4">
-                        <div>
-                            <label className="block text-sm font-medium text-white mb-1">URL</label>
+        <div className="px-4 md:px-6 py-6 bg-[#09090B] min-h-screen w-full">
+            <div className=" mx-auto">
+                <Card className="bg-black text-white border-gray-200">
+                    <CardHeader>
+                        <CardTitle>
+                            {redirectId ? 'Edit Redirect' : 'Create New Redirect'}
+                        </CardTitle>
+                    </CardHeader>
+                    <CardContent>
+                        <div className="mb-4">
+                            <label className="block text-sm font-medium text-white mb-1">Short ID</label>
                             <input
-                                type="url"
-                                name="url"
-                                value={formData.url}
-                                onChange={handleInputChange}
-                                placeholder="Enter destination URL"
-                                className="w-full px-4 bg-[#09090B] py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-accent-500 focus:border-accent-500"
-                                required
+                                type="text"
+                                value={shortId || ''}
+                                className="w-full px-4 bg-[#09090B] py-3 border border-gray-300 rounded-lg text-slate-400"
+                                disabled
                             />
                         </div>
 
-                        <div className="grid grid-cols-2 gap-4">
+                        <form onSubmit={handleSubmit} className="space-y-4">
                             <div>
-                                <label className="block text-sm font-medium text-white mb-1">Start Time</label>
+                                <label className="block text-sm font-medium text-white mb-1">URL</label>
                                 <input
-                                    type="time"
-                                    name="startTime"
-                                    value={formData.startTime}
+                                    type="url"
+                                    name="url"
+                                    value={formData.url}
                                     onChange={handleInputChange}
+                                    placeholder="Enter destination URL"
                                     className="w-full px-4 bg-[#09090B] py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-accent-500 focus:border-accent-500"
                                     required
                                 />
                             </div>
-                            <div>
-                                <label className="block text-sm font-medium text-white mb-1">End Time</label>
-                                <input
-                                    type="time"
-                                    name="endTime"
-                                    value={formData.endTime}
-                                    onChange={handleInputChange}
-                                    className="w-full px-4 bg-[#09090B] py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-accent-500 focus:border-accent-500"
-                                    required
-                                />
+
+                            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                                <div>
+                                    <label className="block text-sm font-medium text-white mb-1">Start Time</label>
+                                    <input
+                                        type="time"
+                                        name="startTime"
+                                        value={formData.startTime}
+                                        onChange={handleInputChange}
+                                        className="w-full px-4 bg-[#09090B] py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-accent-500 focus:border-accent-500"
+                                        required
+                                    />
+                                </div>
+                                <div>
+                                    <label className="block text-sm font-medium text-white mb-1">End Time</label>
+                                    <input
+                                        type="time"
+                                        name="endTime"
+                                        value={formData.endTime}
+                                        onChange={handleInputChange}
+                                        className="w-full px-4 bg-[#09090B] py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-accent-500 focus:border-accent-500"
+                                        required
+                                    />
+                                </div>
                             </div>
-                        </div>
 
-                        <button
-                            type="submit"
-                            disabled={loading}
-                            className="w-full px-6 bg-[#9333EA] py-3 hover:bg-accent-700 text-white font-medium rounded-lg transition-colors disabled:opacity-50"
-                        >
-                            {loading ? (redirectId ? 'Updating...' : 'Creating...') : (redirectId ? 'Update Redirect' : 'Create Redirect')}
-                        </button>
-                    </form>
-                </CardContent>
-            </Card>
+                            <button
+                                type="submit"
+                                disabled={loading}
+                                className="w-full px-6 bg-[#9333EA] py-3 hover:bg-accent-700 text-white font-medium rounded-lg transition-colors disabled:opacity-50"
+                            >
+                                {loading ? (redirectId ? 'Updating...' : 'Creating...') : (redirectId ? 'Update Redirect' : 'Create Redirect')}
+                            </button>
+                        </form>
+                    </CardContent>
+                </Card>
 
-            <div className="mt-4 flex gap-4">
-                <Link
-                    href={`/dashboard/Link?id=${id}&shortId=${shortId}`}
-                    className="text-white text-md border-gray-200 text-center bg-[#9333EA]  rounded-lg transition-colors px-4 py-2"
-                >
-                    Show Redirect Data
-                </Link>
-                {redirectId && (
+                <div className="mt-4 flex flex-col sm:flex-row gap-4">
                     <Link
-                        href={`/dashboard/redirect/create?id=${id}&shortId=${shortId}`}
-                        className="text-white text-md border-gray-200 text-center bg-[#9333EA]  rounded-lg transition-colors px-4 py-2"
+                        href={`/dashboard/Link?id=${id}&shortId=${shortId}`}
+                        className="text-white text-md text-center bg-[#9333EA] rounded-lg px-4 py-2"
                     >
-                        Create New Redirect
+                        Show Redirect Data
                     </Link>
-                )}
+                    {redirectId && (
+                        <Link
+                            href={`/dashboard/Create-link/create-redirect-?id=${id}&shortId=${shortId}`}
+                            className="text-white text-md text-center bg-[#9333EA] rounded-lg px-4 py-2"
+                        >
+                            Create New Redirect
+                        </Link>
+                    )}
+                </div>
             </div>
 
-            <ActiveRedirects
-                shortId={shortId}
-                Id={id}
-                redirects={redirects}
-                loading={redirectloading}
-            />
+            <div className=" mx-auto mt-6">
+                <ActiveRedirects
+                    shortId={shortId}
+                    Id={id}
+                    redirects={redirects}
+                    loading={redirectloading}
+                />
+            </div>
         </div>
     );
 };

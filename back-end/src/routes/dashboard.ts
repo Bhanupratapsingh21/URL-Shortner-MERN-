@@ -4,7 +4,8 @@ import {
     getAllLinks,
     getAllRedirects,
     getLinkStats,
-    getChartsdataforLink
+    getChartsdataforLink,
+    getAllLinksAnalytics
 } from '../controller/dashboardcontroller';
 import { authMiddleware } from '../middleware/auth.Middleware';
 
@@ -46,5 +47,12 @@ router.get("/getLinkStats/:shortId", async (req, res, next) => {
     }
 });
 
+router.get('/chart-main-data', async (req, res, next) => {
+    try {
+        await getAllLinksAnalytics(req, res, next);
+    } catch (error) {
+        next(error);
+    }
+});
 
 export default router;

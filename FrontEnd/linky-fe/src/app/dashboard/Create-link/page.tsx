@@ -1,7 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import { usePathname, useRouter } from "next/navigation";
+import { usePathname, useRouter, useSearchParams } from "next/navigation";
 import axios from "axios";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -24,8 +24,9 @@ const CreateRedirectPage = () => {
     const { toast } = useToast();
     const router = useRouter();
     const pathname = usePathname();
-
-    const [shortId, setShortId] = useState("");
+    const searchParams = useSearchParams();
+    const ShortIdfromhomepage = searchParams.get("shortId")
+    const [shortId, setShortId] = useState(ShortIdfromhomepage || "");
     const [isLoading, setIsLoading] = useState(false);
 
     const handleSubmit = async (e: React.FormEvent) => {
@@ -35,7 +36,7 @@ const CreateRedirectPage = () => {
         try {
             const response = await axios.post<CreateRedirectResponse>(
                 `${process.env.NEXT_PUBLIC_API_BASE_URL}/url/createUrl`,
-                shortId ? { shortIdfromuser : shortId } : {},
+                shortId ? { shortIdfromuser: shortId } : {},
                 {
                     withCredentials: true
                 }
@@ -61,8 +62,8 @@ const CreateRedirectPage = () => {
     };
 
     return (
-        <div className="flex justify-center items-center px-48 h-full">
-            <div className="w-full mx-auto p-6">
+        <div className="flex justify-center items-center px-4 sm:px-6 md:px-12 lg:px-24 xl:px-48 py-12 min-h-screen">
+            <div className="w-full ">
                 <Card>
                     <CardHeader>
                         <CardTitle>Create Redirect</CardTitle>
@@ -87,4 +88,3 @@ const CreateRedirectPage = () => {
 };
 
 export default CreateRedirectPage;
-//localhost:3000/dashboard/Create-link/create-redirect?id=9856790f-9dd5-41ee-9e44-2b98c5c38fa7&shortId=6ii8e
