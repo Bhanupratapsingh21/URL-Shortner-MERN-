@@ -18,7 +18,7 @@ const userSlice = createSlice({
             return action.payload;
         },
         clearUser(state) {
-            Object.assign(state, initialState);
+            Object.assign(state, { id: "", username: "", email: "", status: false });
         },
     },
 });

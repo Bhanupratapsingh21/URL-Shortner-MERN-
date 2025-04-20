@@ -114,8 +114,8 @@ export function Sidebar() {
                                     <Link
                                         href={link.href}
                                         className={`flex items-center gap-3 px-4 py-3 rounded-lg transition-all duration-200 group hover:bg-[#1E293B] relative ${pathname === link.href
-                                                ? "text-[#c890f9] bg-[#1E293B]"
-                                                : "text-gray-400"
+                                            ? "text-[#c890f9] bg-[#1E293B]"
+                                            : "text-gray-400"
                                             }`}
                                     >
                                         <div className="w-6 h-6 transition-colors duration-200 group-hover:text-[#c890f9]">
@@ -158,8 +158,8 @@ export function Sidebar() {
                             key={link.title}
                             href={link.href}
                             className={`flex flex-col items-center p-2 rounded-lg transition-all ${pathname === link.href
-                                    ? "text-[#c890f9]"
-                                    : "text-gray-400"
+                                ? "text-[#c890f9]"
+                                : "text-gray-400"
                                 }`}
                             title={link.title}
                         >

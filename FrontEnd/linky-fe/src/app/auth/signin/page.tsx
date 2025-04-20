@@ -106,7 +106,7 @@ export default function Page() {
                   >
                   <input
                     onChange={(e) => setData({ ...data, identifier: e.target.value })}
-                    className="border rounded-lg px-3 py-2 mt-1 mb-5 text-sm w-full"
+                    className="border text-black rounded-lg px-3 py-2 mt-1 mb-5 text-sm w-full"
                     type="text"
                     id="identifier"
                   />
@@ -117,7 +117,7 @@ export default function Page() {
                   >
                   <input
                     onChange={(e) => setData({ ...data, password: e.target.value })}
-                    className="border rounded-lg px-3 py-2 mt-1 mb-5 text-sm w-full"
+                    className="border rounded-lg text-black px-3 py-2 mt-1 mb-5 text-sm w-full"
                     type="password"
                     id="password"
                   />
