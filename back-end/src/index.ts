@@ -19,7 +19,7 @@ const app = express();
 
 // CORS configuration
 const corsOptions: CorsOptions = {
-    origin: ['http://localhost:3000', 'https://url-shortner-mern.vercel.app'],
+    origin: ['http://localhost:3000', "*vercel", "*bpss.tech", 'https://url-shortner-mern.vercel.app'],
     methods: ['GET', 'POST', 'PUT', 'DELETE', 'PATCH', 'OPTIONS'],
     allowedHeaders: ['Content-Type', 'Authorization', 'X-Requested-With', 'Accept', 'Origin'],
     exposedHeaders: ['Content-Type', 'Authorization', 'X-Requested-With', 'Accept'],
@@ -33,7 +33,7 @@ app.set('trust proxy', true);
 
 // Middleware setup
 app.use(cors(corsOptions));
-app.options(["*bpss.tech","*vercel"], cors(corsOptions));
+app.options('*', cors(corsOptions));
 app.use(express.json());
 app.use(cookieParser());
 app.use(helmet());
